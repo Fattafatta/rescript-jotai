@@ -1,0 +1,31 @@
+{
+  "name": "@fattafatta/rescript-jotai",
+  "namespace": "jotai",
+  "reason": { "react-jsx": 3 },
+  "bsc-flags": [],
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true,
+      "public": ["Atom", "Provider", "Utils"]
+    },
+    {
+      "dir": "test",
+      "subdirs": true,
+      "type": "dev"
+    }
+  ],
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "bs-dependencies": ["@rescript/react"],
+  "bs-dev-dependencies": [
+    "@dusty-phillips/rescript-zora",
+    "rescript-hooks-testing-library",
+    "@fattafatta/rescript-zora-jsdom"
+  ]
+}
