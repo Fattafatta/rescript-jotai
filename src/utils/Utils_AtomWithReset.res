@@ -1,11 +1,15 @@
-@ocaml.doc("Creates an atom that could be reset to its initialValue with `useResetAtom` hook.
-To pass this function to a computed atom, the `Resettable.unpack` function has to be used.
+@ocaml.doc("Creates an atom that can be resetted to its initialValue with the `useResetAtom` hook.
 
-Example:
-```
-let atom1 = Jotai.Utils.AtomWithReset.make(1)
-let atom2 = Jotai.Atom.makeComputed(({get}) => atom1->Resettable.unpack->get + 1)  // unpack atom first
+```rescript
+let atom = Jotai.Utils.AtomWithReset.make(1)
+// ... change value ...
+let reset = Jotai.Utils.useResetAtom(atom)
+reset()
 ```
 ")
 @module("jotai/utils")
-external make: 'value => Utils_Resettable.t<'value> = "atomWithReset"
+external make: 'value => Atom.t<
+  'value,
+  Atom.Actions.set<'value>,
+  [Atom.Tags.r | Atom.Tags.w | Atom.Tags.p | Atom.Tags.re],
+> = "atomWithReset"

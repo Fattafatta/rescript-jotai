@@ -1,33 +1,48 @@
-module Permissions: {
+module Tags: {
   type r = [#readable]
   type w = [#writable]
-  type rw = [#readable | #writable]
+  type p = [#primitive]
+  type re = [#resettable]
+  type all = [#primitive | #readable | #resettable | #writable]
 }
-type t<'value, 'a> constraint 'a = [< Permissions.rw]
-type readOnly<'value> = t<'value, Permissions.r>
-type readWrite<'value> = t<'value, Permissions.rw>
-type writeOnly<'value> = t<'value, Permissions.w>
-type readable<'value, 'perm> = t<'value, 'perm> constraint 'perm = [> Permissions.r]
-type writable<'value, 'perm> = t<'value, 'perm> constraint 'perm = [> Permissions.w]
-type getter = {get: 'value 'perm. readable<'value, 'perm> => 'value}
-type setter = {set: 'value 'perm. (writable<'value, 'perm>, 'value) => unit}
-type getterAndSetter = {
-  get: 'value 'perm. readable<'value, 'perm> => 'value,
-  set: 'value 'perm. (writable<'value, 'perm>, 'value) => unit,
+module Actions: {
+  type t<'action>
+  type set<'value> = t<('value => 'value) => unit>
+  type update<'value> = t<'value => unit>
+  type dispatch<'action> = t<'action => unit>
+}
+type t<'value, 'action, 'tags>
+  constraint 'tags = [< Tags.all] constraint 'action = Actions.t<'setValue>
+type void // used for readonly atoms without setter
+
+type set<'value, 'action, 'tags> = t<'value, 'action, 'tags> constraint 'tags = [> Tags.w]
+
+type get<'value, 'action, 'tags> = t<'value, 'action, 'tags> constraint 'tags = [> Tags.r]
+
+type getter = {get: 'value 'action 'tags. get<'value, Actions.t<'action>, 'tags> => 'value}
+type setter = {
+  get: 'value 'action 'tags. get<'value, Actions.t<'action>, 'tags> => 'value,
+  set: 'value 'setValue 'action 'tags. (set<'value, Actions.t<'action>, 'tags>, 'setValue) => unit,
 }
 type getValue<'value> = getter => 'value
 type getValueAsync<'value> = getter => Js.Promise.t<'value>
-type setValue<'args> = (getterAndSetter, 'args) => unit
-type setValueAsync<'args> = (getterAndSetter, 'args) => Js.Promise.t<unit>
+type setValue<'args> = (setter, 'args) => unit
+type setValueAsync<'args> = (setter, 'args) => Js.Promise.t<unit>
 @module("jotai")
-external make: 'value => readWrite<'value> = "atom"
-let makeComputed: getValue<'value> => readOnly<'value>
-let makeComputedAsync: getValueAsync<'value> => readOnly<'value>
-let makeWritableComputed: (getValue<'value>, setValue<'args>) => readWrite<'value>
-let makeWritableComputedAsync: (getValue<'value>, setValueAsync<'args>) => readWrite<'value>
-let makeWriteOnlyComputed: setValue<'a> => writeOnly<'b>
+external make: 'value => t<'value, Actions.set<'value>, [Tags.r | Tags.w | Tags.p]> = "atom"
+let makeComputed: getValue<'value> => t<'value, Actions.t<'a>, Tags.r>
+let makeComputedAsync: getValueAsync<'value> => t<'value, Actions.t<'a>, Tags.r>
+let makeWritableComputed: (
+  getValue<'value>,
+  setValue<'args>,
+) => t<'value, Actions.update<'args>, [Tags.r | Tags.w]>
+let makeWritableComputedAsync: (
+  getValue<'value>,
+  setValueAsync<'args>,
+) => t<'value, Actions.update<'args>, [#readable | #writable]>
+let makeWriteOnlyComputed: setValue<'a> => t<'b, Actions.update<'a>, Tags.w>
 @module("jotai")
-external use: readWrite<'value> => ('value, 'value => unit) = "useAtom"
+external use: t<'value, Actions.t<'action>, [> Tags.r | Tags.w]> => ('value, 'action) = "useAtom"
 type setAtom<'value> = ('value => 'value) => unit
 type onUnmount = unit => unit
-let onMount: (writable<'value, [< Permissions.w]>, setAtom<'value> => onUnmount) => unit
+let onMount: (t<'value, _, [> Tags.w]>, setAtom<'value> => onUnmount) => unit

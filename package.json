@@ -15,7 +15,6 @@
     "build": "rescript",
     "build:deps": "rescript build -with-deps",
     "start": "rescript build -w -with-deps",
-    "test:watch": "npm run build && onchange --initial '{tests,src}/*.bs.js' -- pta 'test/*_test.bs.js'",
     "test": "npm run build && pta 'test/*_test.bs.js'"
   },
   "devDependencies": {
@@ -23,7 +22,6 @@
     "@fattafatta/rescript-zora-jsdom": "^0.1.1",
     "@testing-library/react-hooks": "^7.0.2",
     "jotai": "^1.4.6",
-    "onchange": "^7.1.0",
     "rescript": "^9.1.4",
     "rescript-hooks-testing-library": "^0.1.0"
   },

@@ -7,7 +7,7 @@ zoraWithDOM("standard atom", t => {
   let {result} = renderHook(() => Atom.use(a), ())
   let (value, setValue) = result.current
   t->equal(value, 1, "should be 1")
-  act(() => setValue(2))
+  act(() => setValue(p => p + 1))
   let (value, _) = result.current
   t->equal(value, 2, "should be 2")
   done()
@@ -20,7 +20,7 @@ zoraWithDOM("computed readonly atom", t => {
   let {result: r2} = renderHook(() => Utils.useAtomValue(c), ())
   t->equal(r2.current, 2, "should be 2")
   let (_, setValue) = r1.current
-  act(() => setValue(2))
+  act(() => setValue(p => p + 1))
   t->equal(r2.current, 3, "should be 3")
   done()
 })
