@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { atom } = require('jotai');
 const { atomWithDefault } = require('jotai/utils')
 
@@ -23,14 +22,15 @@ exports.atomWrapped = (getFunc, writeFunc) => {
       // that is only used internally. But it messes up the Curry._1 function used by rescript. Keeping the
       // optional parameter would make the function signature unnecessarily complex.
       const getWithoutOptions = a => get(a, undefined);
-      writeFunc({ get: getWithoutOptions, set }, args);
+      writeFunc({ get: getWithoutOptions, set, dispatch: set }, args);
     },
   );
 };
 
-exports.onMount = (atom, setter) => {
-  return atom.onMount(setter)
+exports.onMount = (anAtom, setter) => {
+  anAtom.onMount = setter
 }
+exports.something = undefined
 
 exports.atomWithDefaultWrapped = (getFunc) => {
   return atomWithDefault(

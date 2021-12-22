@@ -1,72 +1,87 @@
-// PERMISSIONS
-@ocaml.doc(" All Jotai functions are scoped to only work with atoms that have
-the necessary permissions. An atom can be `#readable`, `#writable` or both.
+// TYPES
+@ocaml.doc("Tags are used to restrict (or allow) operations on atoms. For example, some hooks can
+only be used on `#primitive`` atoms, or some atoms can be `#resettable`. Tags help transfer the 
+flexibility of Jotai into the strictly typed world of ReScript.
 ")
-module Permissions = {
+module Tags = {
   type r = [#readable]
   type w = [#writable]
-  type rw = [#readable | #writable]
+  type p = [#primitive]
+  type re = [#resettable]
+  type all = [r | w | p | re]
+}
+@ocaml.doc("Atoms use different functions to update their values. For example an 
+`AtomWithReducer` provides a `dispatch` function that has an 'action parameter.
+
+```rescript
+let (value, dispatch) = Atom.use(atomWithReducer)
+dispatch(Increment(1))
+
+let (value, setValue) = Atom.use(primitiveAtom)
+setValue(prev => prev + 1)
+```
+")
+module Actions = {
+  type t<'action>
+  type set<'value> = t<('value => 'value) => unit>
+  type update<'value> = t<'value => unit>
+  type dispatch<'action> = t<'action => unit>
 }
 
-@ocaml.doc("Basic type of all atoms. Each atom has a 'value and a set of 'permissions
-that define, which actions are allowed.")
-type t<'value, 'permissions> constraint 'permissions = [< Permissions.rw]
+@ocaml.doc("Atoms have a value, a setter function (from `Atom.Actions`), and a set of
+tags that restrict which operations are allowed on the atom (e.g is the atom `#resettable`).
 
-type readOnly<'value> = t<'value, Permissions.r>
-type readWrite<'value> = t<'value, Permissions.rw>
-type writeOnly<'value> = t<'value, Permissions.w>
-type readable<'value, 'perm> = t<'value, 'perm> constraint 'perm = [> Permissions.r]
-type writable<'value, 'perm> = t<'value, 'perm> constraint 'perm = [> Permissions.w]
+```rescript
+let atom: Jotai.Atom.t<int, _, _> = Jotai.Atom.make(1)
+```
+")
+type t<'value, 'action, 'tags>
+  constraint 'tags = [< Tags.all] constraint 'action = Actions.t<'setValue>
+type void // used for readonly atoms without setter
 
-// Note: The function signature had to be changed from `'atom => 'value` to
-// `{get: 'atom => 'value}`. Wrapping `get` in a record was necessary to handle type
-// inference for higher-rank polymorphic functions in ReScript.
-// (For details see: https://ocaml.org/manual/polymorphism.html#s%3Ahigher-rank-poly)
-type getter = {get: 'value 'perm. readable<'value, 'perm> => 'value}
-type setter = {set: 'value 'perm. (writable<'value, 'perm>, 'value) => unit}
-type getterAndSetter = {
-  get: 'value 'perm. readable<'value, 'perm> => 'value,
-  set: 'value 'perm. (writable<'value, 'perm>, 'value) => unit,
+type set<'value, 'action, 'tags> = t<'value, 'action, 'tags> constraint 'tags = [> Tags.w]
+
+type get<'value, 'action, 'tags> = t<'value, 'action, 'tags> constraint 'tags = [> Tags.r]
+
+type getter = {get: 'value 'action 'tags. get<'value, Actions.t<'action>, 'tags> => 'value}
+type setter = {
+  get: 'value 'action 'tags. get<'value, Actions.t<'action>, 'tags> => 'value,
+  set: 'value 'setValue 'action 'tags. (set<'value, Actions.t<'action>, 'tags>, 'setValue) => unit,
 }
+
 type getValue<'value> = getter => 'value
 type getValueAsync<'value> = getter => Js.Promise.t<'value>
-type setValue<'args> = (getterAndSetter, 'args) => unit
-type setValueAsync<'args> = (getterAndSetter, 'args) => Js.Promise.t<unit>
+type setValue<'args> = (setter, 'args) => unit
+type setValueAsync<'args> = (setter, 'args) => Js.Promise.t<unit>
 
 // ATOMS
-@ocaml.doc("
-Create a simple readable and writable atom.
+@ocaml.doc("Create a (primitive) readable and writable atom.
 
-Example:
-```
+```rescript
 let atom1 = Jotai.Atom.make(1)
 let atom2 = Jotai.Atom.make('text')
 ```
 ")
 @module("jotai")
-external make: 'value => readWrite<'value> = "atom"
+external make: 'value => t<'value, Actions.set<'value>, [Tags.r | Tags.w | Tags.p]> = "atom"
 
-@ocaml.doc("
-Create a computed readonly atom. A computed atom can combine any number
-of readable atoms to create a single derived value. 
-The syntax varies slightly from Jotai. Note the curly braces in `({get})`.
+@ocaml.doc("Create a computed readonly atom. A computed atom can combine any number of
+readable atoms to create a single derived value. The syntax varies slightly from Jotai. 
+Note the curly braces in `({get})`.
 
-Example:
-```
+```rescript
 let atom1 = Jotai.Atom.make(1)
 let atom2 = Jotai.Atom.makeComputed(({get}) => get(atom1) + 1)
 let atom3 = Jotai.Atom.makeComputed(({get}) => get(atom1) + get(atom2) + 1)
 ```
 ")
 @module("./wrapper")
-external makeComputed: getValue<'value> => readOnly<'value> = "atomWrapped"
+external makeComputed: getValue<'value> => t<'value, _, [Tags.r]> = "atomWrapped"
 
-@ocaml.doc("
-(Requires React.Suspense) Create an async computed readonly atom. All components will
-be notified when the returned promise resolves.
+@ocaml.doc("(Requires React.Suspense) Create an computed readonly atom with an async getter.
+All components will be notified when the returned promise resolves.
 
-Example:
-```
+```rescript
 let atom1 = Jotai.Atom.make(1)
 let atom2 = Jotai.Atom.makeComputedAsync(({get}) => {
   Js.Promise.make((~resolve, ~reject as _) => {
@@ -77,13 +92,11 @@ let atom2 = Jotai.Atom.makeComputedAsync(({get}) => {
 ```
 ")
 @module("./wrapper")
-external makeComputedAsync: getValueAsync<'value> => readOnly<'value> = "atomWrapped"
+external makeComputedAsync: getValueAsync<'value> => t<'value, _, [Tags.r]> = "atomWrapped"
 
-@ocaml.doc("
-Create a computed atom that supports read and write.
+@ocaml.doc("Create a computed atom that supports read and write.
 
-Example:
-```
+```rescript
 let atom1 = Jotai.Atom.make(1)
 let atom2 = Jotai.Atom.makeWritableComputed(
   ({get}) => get(atom1) + 1,
@@ -94,15 +107,15 @@ let atom2 = Jotai.Atom.makeWritableComputed(
 ```
 ")
 @module("./wrapper")
-external makeWritableComputed: (getValue<'value>, setValue<'args>) => readWrite<'value> =
-  "atomWrapped"
+external makeWritableComputed: (
+  getValue<'value>,
+  setValue<'args>,
+) => t<'value, Actions.update<'args>, [Tags.r | Tags.w]> = "atomWrapped"
 
-@ocaml.doc("
-Create a computed atom with asynchronous write. Jotai supports async write operations
-for computed atoms. Simply call 'set' when the promise resolves.
+@ocaml.doc("Create a computed atom with asynchronous write. Jotai supports async write
+operations for computed atoms. Simply call 'set' when the promise resolves.
 
-Example:
-```
+```rescript
 let atom1 = Jotai.Atom.make(1)
 let atom2 = Jotai.Atom.makeWritableComputedAsync(
   ({get}) => get(atom1) + 1,
@@ -119,63 +132,45 @@ let atom2 = Jotai.Atom.makeWritableComputedAsync(
 ```
 ")
 @module("./wrapper")
-external makeWritableComputedAsync: (getValue<'value>, setValueAsync<'args>) => readWrite<'value> =
-  "atomWrapped"
+external makeWritableComputedAsync: (
+  getValue<'value>,
+  setValueAsync<'args>,
+) => t<'value, Actions.update<'args>, [Tags.r | Tags.w]> = "atomWrapped"
 
 @module("./wrapper")
-external makeWOC: (unit, setValue<'args>) => writeOnly<'value> = "atomWrapped"
+external _makeWOC: (unit, setValue<'args>) => t<'value, Actions.update<'args>, [Tags.w]> =
+  "atomWrapped"
 
-@ocaml.doc("
-Create a writeOnly computed atom.
-(Note:The type can not be inferred automatically so it
-has to be annotated)
+@ocaml.doc("Create a writeOnly computed atom.
+(Note: Sometimes the type can not be inferred automatically and has to be annotated)
 
-Example:
-```
+```rescript
 let atom1 = make(1)
-let atom2: Jotai.Atom.writeOnly<int> = Jotai.Atom.makeWriteOnlyComputed(({get, set}, args) =>
+let atom2: Jotai.Atom.t<int, _, _> = Jotai.Atom.makeWriteOnlyComputed(({get, set}, args) =>
   atom1->set(get(atom1) + args)
 )
 ```
 ")
-let makeWriteOnlyComputed = getSet => makeWOC((), getSet)
+let makeWriteOnlyComputed = getSet => _makeWOC((), getSet)
 
 // HOOKS
 @ocaml.doc("Standard hook to use with read/write atoms.
 (For handling of readOnly/writeOnly atoms see `Jotai.Utils`)
 
-Example:
-```
+```rescript
 let atom1 = Jotai.Atom.make(1)
 let (value, setValue) = Jotai.Atom.use(atom1) 
 ```
 ")
 @module("jotai")
-external use: readWrite<'value> => ('value, 'value => unit) = "useAtom"
-
-// @module("jotai")
-// external useR: t<'value, [> Permissions.r]> => ('value, 'value => unit) = "useAtom"
-
-// @module("jotai")
-// external useW: t<'value, Permissions.w> => (unit, 'value => unit) = "useAtom"
-
-// let useReadable = (atom: t<'value, [> Permissions.r]>): 'value => {
-//   let (value, _) = atom->useR
-//   value
-// }
-
-// let useWriteOnly = (atom: t<'value, Permissions.w>) => {
-//   let (_, setValue) = atom->useW
-//   setValue
-// }
+external use: t<'value, Actions.t<'action>, [> Tags.r | Tags.w]> => ('value, 'action) = "useAtom"
 
 type setAtom<'value> = ('value => 'value) => unit
 type onUnmount = unit => unit
 @ocaml.doc("The `onMount` function will be invoked when the atom is first used in a provider,
 and `onUnmount` will be invoked when it's not used.
 
-Example:
-```
+```rescript
 let atom1 = Jotai.Atom.make(1)
 atom1->Jotai.Atom.onMount(setAtom => {
   setAtom(a => a + 1) // increment count on mount
@@ -184,4 +179,4 @@ atom1->Jotai.Atom.onMount(setAtom => {
 ```
 ")
 @module("./wrapper")
-external onMount: (writable<'value, 'perm>, setAtom<'value> => onUnmount) => unit = "onMount"
+external onMount: (t<'value, _, [> Tags.w]>, setAtom<'value> => onUnmount) => unit = "onMount"
