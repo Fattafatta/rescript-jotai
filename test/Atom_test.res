@@ -51,3 +51,19 @@ zoraWithDOM("computed writable atom", t => {
 //   })
 //   done()
 // })
+
+
+zoraWithDOM("computed writeonly atom", t => {
+  let a = Atom.make(1)
+  let b: Atom.t<int, _, _> = Atom.makeWriteOnlyComputed(
+  ({set, _}, id) => {
+    a->set(id)
+  })
+  let {result} = renderHook(() => Utils.useUpdateAtom(b), ())
+  let setValue = result.current
+  act(() => setValue(2))
+  let {result} = renderHook(() => Atom.use(a), ())
+  let (value, _) = result.current
+  t->equal(value, 2, "should be 2")
+  done()
+})
