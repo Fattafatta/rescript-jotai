@@ -138,7 +138,7 @@ external makeWritableComputedAsync: (
 ) => t<'value, Actions.update<'args>, [Tags.r | Tags.w]> = "atomWrapped"
 
 @module("./wrapper")
-external _makeWOC: (unit, setValue<'args>) => t<'value, Actions.update<'args>, [Tags.w]> =
+external _makeWOC: (Js.Nullable.t<void>, setValue<'args>) => t<'value, Actions.update<'args>, [Tags.w]> =
   "atomWrapped"
 
 @ocaml.doc("Create a writeOnly computed atom.
@@ -151,7 +151,7 @@ let atom2: Jotai.Atom.t<int, _, _> = Jotai.Atom.makeWriteOnlyComputed(({get, set
 )
 ```
 ")
-let makeWriteOnlyComputed = getSet => _makeWOC((), getSet)
+let makeWriteOnlyComputed = getSet => _makeWOC(Js.Nullable.null, getSet)
 
 // HOOKS
 @ocaml.doc("Standard hook to use with read/write atoms.
