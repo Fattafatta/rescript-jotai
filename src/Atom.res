@@ -10,6 +10,12 @@ module Tags = {
   type re = [#resettable]
   type all = [r | w | p | re]
 }
+
+@ocaml.doc("Readonly atoms have no setter but one is required in the type signature.
+Setting an explicit none type prevents compiler problems with type annotation.
+")
+type none
+
 @ocaml.doc("Atoms use different functions to update their values. For example an 
 `AtomWithReducer` provides a `dispatch` function that has an 'action parameter.
 
@@ -26,6 +32,7 @@ module Actions = {
   type set<'value> = t<('value => 'value) => unit>
   type update<'value> = t<'value => unit>
   type dispatch<'action> = t<'action => unit>
+  type none = t<none>
 }
 
 @ocaml.doc("Atoms have a value, a setter function (from `Atom.Actions`), and a set of
@@ -76,7 +83,7 @@ let atom3 = Jotai.Atom.makeComputed(({get}) => get(atom1) + get(atom2) + 1)
 ```
 ")
 @module("./wrapper")
-external makeComputed: getValue<'value> => t<'value, _, [Tags.r]> = "atomWrapped"
+external makeComputed: getValue<'value> => t<'value, Actions.none, [Tags.r]> = "atomWrapped"
 
 @ocaml.doc("(Requires React.Suspense) Create an computed readonly atom with an async getter.
 All components will be notified when the returned promise resolves.

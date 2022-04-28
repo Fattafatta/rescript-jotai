@@ -5,12 +5,16 @@ module Tags: {
   type re = [#resettable]
   type all = [#primitive | #readable | #resettable | #writable]
 }
+type none
+
 module Actions: {
   type t<'action>
   type set<'value> = t<('value => 'value) => unit>
   type update<'value> = t<'value => unit>
   type dispatch<'action> = t<'action => unit>
+  type none = t<none>
 }
+
 type t<'value, 'action, 'tags>
   constraint 'tags = [< Tags.all] constraint 'action = Actions.t<'setValue>
 type void // used for readonly atoms without setter
@@ -30,7 +34,7 @@ type setValue<'args> = (setter, 'args) => unit
 type setValueAsync<'args> = (setter, 'args) => Js.Promise.t<unit>
 @module("jotai")
 external make: 'value => t<'value, Actions.set<'value>, [Tags.r | Tags.w | Tags.p]> = "atom"
-let makeComputed: getValue<'value> => t<'value, Actions.t<'a>, Tags.r>
+let makeComputed: getValue<'value> => t<'value, Actions.none, Tags.r>
 let makeComputedAsync: getValueAsync<'value> => t<'value, Actions.t<'a>, Tags.r>
 let makeWritableComputed: (
   getValue<'value>,
