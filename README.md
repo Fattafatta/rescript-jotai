@@ -168,7 +168,7 @@ let atom1 = Jotai.Utils.AtomWithStorage.make('storageKey', 1)
 
 #### Resettable atom (`Jotai.Utils.AtomWithReset.make`)
 
-Creates an atom that can be resetted to its initialValue with the `useResetAtom` hook.
+Creates an atom that can be reset to its initialValue with the `useResetAtom` hook.
 
 ```rescript
 let atom = Jotai.Utils.AtomWithReset.make(1)
@@ -202,6 +202,50 @@ let countReducer = (prev, action) => {
 let atom = Utils.AtomWithReducer.make(0, countReducer)
 let (value, dispatch) = Atom.use(atom)
 Inc(1)->dispatch
+```
+
+#### AtomFamily (`Jotai.Utils.AtomFamily`)
+
+Creates an atomFamily. If the compiler has trouble inferring the type,
+it is recommended to set the type directly on the function param.
+
+```rescript
+let atomFamily = Jotai.Utils.AtomFamily.make((name: string) => Jotai.Atom.make(name))
+let atom = atomFamily(\"text\")
+```
+
+##### With Equals function (`Jotai.Utils.AtomFamily.makeWithEqual`)
+
+Creates an atomFamily with a supplied comparison function
+
+```rescript
+let atomFamWithEqual = Jotai.Utils.AtomFamily.makeWithEqual(
+  name => Jotai.Atom.make(name),
+  (strA, strB) => strA == strB,
+)
+```
+
+##### Remove
+
+Removes an atom from an atomFamily.
+
+```rescript
+Jotai.Utils.AtomFamily.remove(atomFamily, \"text\")
+```
+
+##### SetShouldRemove
+
+Register a shouldRemove function.
+
+```rescript
+let shouldRemove = (createdAt, param) => param == \"test\"
+Jotai.Utils.AtomFamily.setShouldRemove(atomFamily, shouldRemove)
+```
+
+Unregister the shouldRemove function.
+
+```rescript
+Jotai.Utils.AtomFamily.setShouldRemoveUnregister(atomFamily, Js.Null.empty)
 ```
 
 ### Utils Hooks
