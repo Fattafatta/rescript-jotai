@@ -13,6 +13,14 @@ zoraWithDOM("standard atom", t => {
   done()
 })
 
+// zoraWithDOM("async read atom", t => {
+//   let a = Atom.makeAsync(() => Js.Promise.resolve(1))
+//   let {result} = renderHook(() => Atom.use(a), ())
+//   let (value, _) = result.current
+//   t->equal(value, 1, "should be 1")
+//   done()
+// })
+
 zoraWithDOM("computed readonly atom", t => {
   let a = Atom.make(1)
   let c = Atom.makeComputed(({get}) => get(a) + 1)
@@ -52,11 +60,9 @@ zoraWithDOM("computed writable atom", t => {
 //   done()
 // })
 
-
 zoraWithDOM("computed writeonly atom", t => {
   let a = Atom.make(1)
-  let b: Atom.t<int, _, _> = Atom.makeWriteOnlyComputed(
-  ({set, _}, id) => {
+  let b: Atom.t<int, _, _> = Atom.makeWriteOnlyComputed(({set, _}, id) => {
     a->set(id)
   })
   let {result} = renderHook(() => Utils.useUpdateAtom(b), ())

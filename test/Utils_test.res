@@ -105,3 +105,37 @@ zoraWithDOM("useAtomValue hook", t => {
   t->equal(result.current, 2, "should be 2")
   done()
 })
+
+zoraWithDOM("AtomFamily", t => {
+  let fam = Utils.AtomFamily.make(name => Jotai.Atom.make(name))
+  let a = fam(1)
+  let b = fam(1)
+  let {result} = renderHook(() => Atom.use(a), ())
+  let (value, setValue) = result.current
+  t->equal(value, 1, "a should be 1")
+  act(() => setValue(p => p + 1))
+  let (value, _) = result.current
+  t->equal(value, 2, "a should be 2 after update")
+
+  let {result} = renderHook(() => Atom.use(b), ())
+  let (value, _) = result.current
+  t->equal(value, 2, "b should be 2")
+  done()
+})
+
+zoraWithDOM("AtomFamily", t => {
+  let fam = Utils.AtomFamily.makeWithEqual(name => Jotai.Atom.make(name), (a, b) => b > a)
+  let a = fam(1)
+  let b = fam(5)
+  let {result} = renderHook(() => Atom.use(a), ())
+  let (value, setValue) = result.current
+  t->equal(value, 1, "a should be 1")
+  act(() => setValue(p => p + 1))
+  let (value, _) = result.current
+  t->equal(value, 2, "a should be 2 after update")
+
+  let {result} = renderHook(() => Atom.use(b), ())
+  let (value, _) = result.current
+  t->equal(value, 2, "b should be 2")
+  done()
+})
