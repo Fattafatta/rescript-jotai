@@ -60,6 +60,18 @@ let atom1 = Jotai.Atom.make(1)
 let atom2 = Jotai.Atom.make('text')
 ```
 
+#### Primitive atom with async read (`Jotai.Atom.makeAsync`)
+
+Create an atom from an async function.
+
+```rescript
+let atom1 = Jotai.Atom.makeAsync(() =>
+  Js.Promise.make((~resolve, ~reject as _) => {
+    Js.Global.setTimeout(() => resolve(. 1), 100)->ignore
+  })
+)
+```
+
 #### Computed atom (`Jotai.Atom.makeComputed`)
 
 Create a computed readonly atom. A computed atom can combine any number of readable atoms to create a single derived value. The syntax varies slightly from Jotai.
@@ -214,7 +226,7 @@ let atomFamily = Jotai.Utils.AtomFamily.make((name: string) => Jotai.Atom.make(n
 let atom = atomFamily(\"text\")
 ```
 
-##### With Equals function (`Jotai.Utils.AtomFamily.makeWithEqual`)
+##### With Equals function
 
 Creates an atomFamily with a supplied comparison function
 
@@ -308,7 +320,6 @@ These functions are not (yet) supported.
 
 - atomWithObservable
 - atomWithHash
-- atomFamily
 - selectAtom
 - useAtomCallback
 - freezeAtom

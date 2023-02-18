@@ -72,6 +72,23 @@ let atom2 = Jotai.Atom.make('text')
 @module("jotai")
 external make: 'value => t<'value, Actions.set<'value>, [Tags.r | Tags.w | Tags.p]> = "atom"
 
+@ocaml.doc("Create an atom from an async function.
+
+```rescript
+let atom7 = Jotai.Atom.makeAsync(() =>
+  Js.Promise.make((~resolve, ~reject as _) => {
+    Js.Global.setTimeout(() => resolve(. 1), 100)->ignore
+  })
+)
+```
+")
+@module("jotai")
+external makeAsync: (unit => Js.Promise.t<'value>) => t<
+  'value,
+  Actions.set<'value>,
+  [Tags.r | Tags.w | Tags.p],
+> = "atom"
+
 @ocaml.doc("Create a computed readonly atom. A computed atom can combine any number of
 readable atoms to create a single derived value. The syntax varies slightly from Jotai. 
 Note the curly braces in `({get})`.
@@ -145,8 +162,10 @@ external makeWritableComputedAsync: (
 ) => t<'value, Actions.update<'args>, [Tags.r | Tags.w]> = "atomWrapped"
 
 @module("./wrapper")
-external _makeWOC: (Js.Nullable.t<void>, setValue<'args>) => t<'value, Actions.update<'args>, [Tags.w]> =
-  "atomWrapped"
+external _makeWOC: (
+  Js.Nullable.t<void>,
+  setValue<'args>,
+) => t<'value, Actions.update<'args>, [Tags.w]> = "atomWrapped"
 
 @ocaml.doc("Create a writeOnly computed atom.
 (Note: Sometimes the type can not be inferred automatically and has to be annotated)
