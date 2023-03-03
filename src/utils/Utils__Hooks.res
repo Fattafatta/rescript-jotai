@@ -1,4 +1,5 @@
 // useUpdateAtom
+@deprecated("[DEPRECATED]: use `useSetAtom` from `jotai` instead.")
 @ocaml.doc("A hook that returns only the update function of an atom. Can be used to access writeOnly atoms.
 
 ```rescript
@@ -12,6 +13,7 @@ external useUpdateAtom: Atom.t<'value, Atom.Actions.t<'action>, [> Atom.Tags.w]>
   "useUpdateAtom"
 
 // useAtomValue
+@deprecated("[DEPRECATED]: use `useAtomValue` from `jotai` instead.")
 @ocaml.doc("A hook that returns only the value of an atom. Can be used to access 
 readOnly atoms.
 
