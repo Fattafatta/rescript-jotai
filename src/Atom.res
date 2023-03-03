@@ -57,9 +57,9 @@ type setter = {
 }
 
 type getValue<'value> = getter => 'value
-type getValueAsync<'value> = getter => Js.Promise.t<'value>
+type getValueAsync<'value> = getter => promise<'value>
 type setValue<'args> = (setter, 'args) => unit
-type setValueAsync<'args> = (setter, 'args) => Js.Promise.t<unit>
+type setValueAsync<'args> = (setter, 'args) => promise<unit>
 
 // ATOMS
 @ocaml.doc("Create a (primitive) readable and writable atom.
@@ -75,15 +75,11 @@ external make: 'value => t<'value, Actions.set<'value>, [Tags.r | Tags.w | Tags.
 @ocaml.doc("Create an atom from an async function.
 
 ```rescript
-let atom7 = Jotai.Atom.makeAsync(() =>
-  Js.Promise.make((~resolve, ~reject as _) => {
-    Js.Global.setTimeout(() => resolve(. 1), 100)->ignore
-  })
-)
+let atom1 = Jotai.Atom.makeAsync(async () => 1)
 ```
 ")
 @module("jotai")
-external makeAsync: (unit => Js.Promise.t<'value>) => t<
+external makeAsync: (unit => promise<'value>) => t<
   'value,
   Actions.set<'value>,
   [Tags.r | Tags.w | Tags.p],
@@ -107,16 +103,12 @@ All components will be notified when the returned promise resolves.
 
 ```rescript
 let atom1 = Jotai.Atom.make(1)
-let atom2 = Jotai.Atom.makeComputedAsync(({get}) => {
-  Js.Promise.make((~resolve, ~reject as _) => {
-    let count = atom1->get + 1
-    Js.Global.setTimeout(() => resolve(. count), 100)->ignore
-  })
-})
+let atom2 = Jotai.Atom.makeComputedAsync(async ({get}) => {atom1->get + 2})
 ```
 ")
 @module("./wrapper")
-external makeComputedAsync: getValueAsync<'value> => t<'value, _, [Tags.r]> = "atomWrapped"
+external makeComputedAsync: getValueAsync<'value> => t<'value, Actions.none, [Tags.r]> =
+  "atomWrapped"
 
 @ocaml.doc("Create a computed atom that supports read and write.
 
