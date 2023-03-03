@@ -1,0 +1,5 @@
+{
+  "setupFiles": ["jest-localstorage-mock"],
+  "testEnvironment": "jsdom",
+  "testMatch": ["**/test/*_test.bs.js"]
+}

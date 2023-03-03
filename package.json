@@ -16,15 +16,15 @@
     "build": "rescript",
     "build:deps": "rescript build -with-deps",
     "start": "rescript build -w -with-deps",
-    "test": "npm run build && pta 'test/*_test.bs.js'"
+    "test": "npm run build && jest"
   },
   "devDependencies": {
-    "@dusty-phillips/rescript-zora": "^3.0.2",
-    "@fattafatta/rescript-zora-jsdom": "^0.1.1",
-    "@testing-library/react-hooks": "^7.0.2",
+    "@greenlabs/rescript-jest": "^1.0.1",
+    "@greenlabs/rescript-testing-library": "^2.0.1",
+    "jest-environment-jsdom": "^29.3.1",
+    "jest-localstorage-mock": "^2.4.22",
     "jotai": "^1.4.6",
-    "rescript": "^10.1.2",
-    "rescript-hooks-testing-library": "^0.1.0"
+    "rescript": "^10.1.2"
   },
   "peerDependencies": {
     "@rescript/react": "^0.11.0",
