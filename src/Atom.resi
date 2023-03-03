@@ -56,3 +56,8 @@ external use: t<'value, Actions.t<'action>, [> Tags.r | Tags.w]> => ('value, 'ac
 type setAtom<'value> = ('value => 'value) => unit
 type onUnmount = unit => unit
 let onMount: (t<'value, _, [> Tags.w]>, setAtom<'value> => onUnmount) => unit
+@module("jotai")
+external useAtomValue: t<'value, _, [> Tags.r]> => 'value = "useAtomValue"
+@module("jotai")
+external useSetAtom: t<'value, Actions.t<'action>, [> Tags.w]> => 'action =
+  "useSetAtom"

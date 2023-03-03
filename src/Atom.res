@@ -198,3 +198,29 @@ atom1->Jotai.Atom.onMount(setAtom => {
 ")
 @module("./wrapper")
 external onMount: (t<'value, _, [> Tags.w]>, setAtom<'value> => onUnmount) => unit = "onMount"
+
+// useUpdateAtom
+@ocaml.doc("A hook that returns only the update function of an atom. Can be used to access writeOnly atoms.
+
+```rescript
+let atom = Jotai.Atom.make(1)
+let setValue = Jotai.Utils.useUpdateAtom(atom) 
+setValue(prev => prev + 1)
+```
+")
+@module("jotai")
+external useSetAtom: t<'value, Actions.t<'action>, [> Tags.w]> => 'action =
+  "useSetAtom"
+
+// useAtomValue
+@ocaml.doc("A hook that returns only the value of an atom. Can be used to access 
+readOnly atoms.
+
+```rescript
+let atom = Jotai.Atom.make(1)
+let value = Jotai.Utils.useAtomValue(atom) 
+```
+")
+@module("jotai")
+external useAtomValue: t<'value, _, [> Tags.r]> => 'value = "useAtomValue"
+
