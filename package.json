@@ -19,16 +19,16 @@
     "test": "npm run build && pta 'test/*_test.bs.js'"
   },
   "devDependencies": {
-    "@dusty-phillips/rescript-zora": "^3.0.0",
+    "@dusty-phillips/rescript-zora": "^3.0.2",
     "@fattafatta/rescript-zora-jsdom": "^0.1.1",
     "@testing-library/react-hooks": "^7.0.2",
     "jotai": "^1.4.6",
-    "rescript": "^9.1.4",
+    "rescript": "^10.1.2",
     "rescript-hooks-testing-library": "^0.1.0"
   },
   "peerDependencies": {
-    "@rescript/react": "^0.10.3",
+    "@rescript/react": "^0.11.0",
     "jotai": "^1.4.6",
-    "react": "^17.0.2"
+    "react": "^18.0.0"
   }
 }
