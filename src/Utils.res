@@ -13,7 +13,6 @@ include Utils__Hooks
 // TODO: Add missing utils
 // - atomWithObservable
 // - atomWithHash
-// - atomFamily
 // - selectAtom
 // - useAtomCallback
 // - freezeAtom
