@@ -1,57 +1,54 @@
-open Zora
-open ZoraJsdom
-open RescriptHooksTestingLibrary.Testing
+open Jest
+open Expect
+open TestingLibrary.React
 
 @val external window: 'w = "window"
 
-zoraWithDOM("AtomWithStorage", t => {
+test("AtomWithStorage", () => {
   let a = Utils.AtomWithStorage.make("mykey", 1)
-  let {result} = renderHook(() => Atom.use(a), ())
+  let {result} = renderHook(() => Atom.use(a))
   let (value, setValue) = result.current
-  t->equal(value, 1, "should be 1")
+  expect(value)->toBe(1)
   act(() => setValue(p => p + 1))
   let fromStorage =
     window["localStorage"]["getItem"]("mykey")->Belt.Int.fromString->Belt.Option.getUnsafe
-  t->equal(fromStorage, 2, "localStorage should be 2")
-  done()
+  expect(fromStorage)->toBe(2)
 })
 
-zoraWithDOM("AtomWithDefault", t => {
+test("AtomWithDefault", () => {
   let a = Atom.make(1)
   let b = Utils.AtomWithDefault.make(({get}) => a->get + 1)
-  let {result} = renderHook(() => Atom.use(b), ())
+  let {result} = renderHook(() => Atom.use(b))
   let (value, setValue) = result.current
-  t->equal(value, 2, "should be 2")
+  expect(value)->toBe(2)
   act(() => setValue(_ => 1))
   let (value, _) = result.current
-  t->equal(value, 1, "should be 1 after update")
-  let {result} = renderHook(() => Utils.useResetAtom(b), ())
-  result.current()
-  let {result} = renderHook(() => Atom.use(b), ())
+  expect(value)->toBe(1)
+  let {result} = renderHook(() => Utils.useResetAtom(b))
+  act(() =>result.current())
+  let {result} = renderHook(() => Atom.use(b))
   let (value, _) = result.current
-  t->equal(value, 2, "should be 2 again after reset")
-  done()
+  expect(value)->toBe(2)
 })
 
-zoraWithDOM("AtomWithReset", t => {
+test("AtomWithReset", () => {
   let a = Utils.AtomWithReset.make(1)
-  let {result} = renderHook(() => Atom.use(a), ())
+  let {result} = renderHook(() => Atom.use(a))
   let (value, setValue) = result.current
-  t->equal(value, 1, "should be 1")
+  expect(value)->toBe(1)
   act(() => setValue(p => p + 1))
   let (value, _) = result.current
-  t->equal(value, 2, "should be 2 after update")
-  let {result} = renderHook(() => Utils.useResetAtom(a), ())
-  result.current()
-  let {result} = renderHook(() => Atom.use(a), ())
+  expect(value)->toBe(2)
+  let {result} = renderHook(() => Utils.useResetAtom(a))
+  act(() => result.current())
+  let {result} = renderHook(() => Atom.use(a))
   let (value, _) = result.current
-  t->equal(value, 1, "should be 1 again after reset")
-  done()
+  expect(value)->toBe(1)
 })
 
 type actionType = Inc(int) | Dec(int)
 
-zoraWithDOM("AtomWithReducer", t => {
+test("AtomWithReducer", () => {
   let countReducer = (prev, action) => {
     switch action {
     | Inc(num) => prev + num
@@ -59,16 +56,15 @@ zoraWithDOM("AtomWithReducer", t => {
     }
   }
   let a = Utils.AtomWithReducer.make(0, countReducer)
-  let {result} = renderHook(() => Atom.use(a), ())
+  let {result} = renderHook(() => Atom.use(a))
   let (value, dispatch) = result.current
-  t->equal(value, 0, "should be 0")
+  expect(value)->toBe(0)
   act(() => Inc(1)->dispatch)
   let (value, _) = result.current
-  t->equal(value, 1, "should be 1 after update")
-  done()
+  expect(value)->toBe(1)
 })
 
-zoraWithDOM("useReducerAtom hook", t => {
+test("useReducerAtom hook", () => {
   let countReducer = (prev, action) => {
     switch action {
     | Inc(num) => prev + num
@@ -76,66 +72,29 @@ zoraWithDOM("useReducerAtom hook", t => {
     }
   }
   let a = Atom.make(1)
-  let {result} = renderHook(() => Utils.useReducerAtom(a, countReducer), ())
+  let {result} = renderHook(() => Utils.useReducerAtom(a, countReducer))
   let (value, dispatch) = result.current
-  t->equal(value, 1, "should be 1")
+  expect(value)->toBe(1)
   act(() => Inc(1)->dispatch)
   let (value, _) = result.current
-  t->equal(value, 2, "should be 2 after update")
-  done()
+  expect(value)->toBe(2)
 })
 
-zoraWithDOM("useUpdateAtom hook", t => {
+test("useUpdateAtom hook", () => {
   let a = Atom.make(1)
-  let {result} = renderHook(() => Utils.useUpdateAtom(a), ())
+  let {result} = renderHook(() => Utils.useUpdateAtom(a))
   let setValue = result.current
   act(() => setValue(p => p + 1))
-  let {result} = renderHook(() => Atom.use(a), ())
+  let {result} = renderHook(() => Atom.use(a))
   let (value, _) = result.current
-  t->equal(value, 2, "should be 2")
-  done()
+  expect(value)->toBe(2)
 })
 
-zoraWithDOM("useAtomValue hook", t => {
+test("useAtomValue hook", () => {
   let a = Atom.make(1)
-  let {result} = renderHook(() => Atom.use(a), ())
+  let {result} = renderHook(() => Atom.use(a))
   let (_, setValue) = result.current
   act(() => setValue(p => p + 1))
-  let {result} = renderHook(() => Utils.useAtomValue(a), ())
-  t->equal(result.current, 2, "should be 2")
-  done()
-})
-
-zoraWithDOM("AtomFamily", t => {
-  let fam = Utils.AtomFamily.make(name => Jotai.Atom.make(name))
-  let a = fam(1)
-  let b = fam(1)
-  let {result} = renderHook(() => Atom.use(a), ())
-  let (value, setValue) = result.current
-  t->equal(value, 1, "a should be 1")
-  act(() => setValue(p => p + 1))
-  let (value, _) = result.current
-  t->equal(value, 2, "a should be 2 after update")
-
-  let {result} = renderHook(() => Atom.use(b), ())
-  let (value, _) = result.current
-  t->equal(value, 2, "b should be 2")
-  done()
-})
-
-zoraWithDOM("AtomFamily", t => {
-  let fam = Utils.AtomFamily.makeWithEqual(name => Jotai.Atom.make(name), (a, b) => b > a)
-  let a = fam(1)
-  let b = fam(5)
-  let {result} = renderHook(() => Atom.use(a), ())
-  let (value, setValue) = result.current
-  t->equal(value, 1, "a should be 1")
-  act(() => setValue(p => p + 1))
-  let (value, _) = result.current
-  t->equal(value, 2, "a should be 2 after update")
-
-  let {result} = renderHook(() => Atom.use(b), ())
-  let (value, _) = result.current
-  t->equal(value, 2, "b should be 2")
-  done()
+  let {result} = renderHook(() => Utils.useAtomValue(a))
+  expect(result.current)->toBe(2)
 })

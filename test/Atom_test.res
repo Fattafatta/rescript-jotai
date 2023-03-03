@@ -1,39 +1,43 @@
-open Zora
-open ZoraJsdom
-open RescriptHooksTestingLibrary.Testing
+open Jest
+open Expect
+open TestingLibrary.React
 
-zoraWithDOM("standard atom", t => {
+test("standard atom", () => {
   let a = Atom.make(1)
-  let {result} = renderHook(() => Atom.use(a), ())
+  let {result} = renderHook(() => Atom.use(a))
   let (value, setValue) = result.current
-  t->equal(value, 1, "should be 1")
+
+  expect(value)->toBe(1)
+
   act(() => setValue(p => p + 1))
   let (value, _) = result.current
-  t->equal(value, 2, "should be 2")
-  done()
+  expect(value)->toBe(2)
 })
 
-// zoraWithDOM("async read atom", t => {
-//   let a = Atom.makeAsync(() => Js.Promise.resolve(1))
-//   let {result} = renderHook(() => Atom.use(a), ())
-//   let (value, _) = result.current
-//   t->equal(value, 1, "should be 1")
-//   done()
+// test("async read atom", () => {
+//   act(() =>{
+//     let a = Atom.makeAsync(async () => {1})
+//     let {result} = renderHook(() => Atom.use(a))
+//     let (value, _) = result.current
+
+//     expect(value)->toBe(1)
+//   })
 // })
 
-zoraWithDOM("computed readonly atom", t => {
+test("computed readonly atom", () => {
   let a = Atom.make(1)
   let c = Atom.makeComputed(({get}) => get(a) + 1)
-  let {result: r1} = renderHook(() => Atom.use(a), ())
-  let {result: r2} = renderHook(() => Utils.useAtomValue(c), ())
-  t->equal(r2.current, 2, "should be 2")
+  let {result: r1} = renderHook(() => Atom.use(a))
+  let {result: r2} = renderHook(() => Utils.useAtomValue(c))
+
+  expect(r2.current)->toBe(2)
   let (_, setValue) = r1.current
+
   act(() => setValue(p => p + 1))
-  t->equal(r2.current, 3, "should be 3")
-  done()
+  expect(r2.current)->toBe(3)
 })
 
-zoraWithDOM("computed writable atom", t => {
+test("computed writable atom", () => {
   let a = Atom.make(1)
   let rw = Atom.makeWritableComputed(
     ({get}) => a->get + 1,
@@ -41,16 +45,16 @@ zoraWithDOM("computed writable atom", t => {
       a->set(a->get + arg)
     },
   )
-  let {result} = renderHook(() => Atom.use(rw), ())
+  let {result} = renderHook(() => Atom.use(rw))
   let (value, addValue) = result.current
-  t->equal(value, 2, "should be 2")
+  expect(value)->toBe(2)
+
   act(() => addValue(1))
   let (value, _) = result.current
-  t->equal(value, 3, "should be 3")
-  done()
+  expect(value)->toBe(3)
 })
 
-// zora("async readonly atom", t => {
+// testPromise("async readonly atom", async () => {
 //   let a = Atom.make(1)
 //   let c = Atom.makeComputedAsync(({get}) => Js.Promise.resolve(get(a) + 1))
 //   act(() => {
@@ -60,16 +64,15 @@ zoraWithDOM("computed writable atom", t => {
 //   done()
 // })
 
-zoraWithDOM("computed writeonly atom", t => {
+test("computed writeonly atom", () => {
   let a = Atom.make(1)
   let b: Atom.t<int, _, _> = Atom.makeWriteOnlyComputed(({set, _}, id) => {
     a->set(id)
   })
-  let {result} = renderHook(() => Utils.useUpdateAtom(b), ())
+  let {result} = renderHook(() => Utils.useUpdateAtom(b))
   let setValue = result.current
   act(() => setValue(2))
-  let {result} = renderHook(() => Atom.use(a), ())
+  let {result} = renderHook(() => Atom.use(a))
   let (value, _) = result.current
-  t->equal(value, 2, "should be 2")
-  done()
+  expect(value)->toBe(2)
 })

@@ -23,8 +23,7 @@
   "suffix": ".bs.js",
   "bs-dependencies": ["@rescript/react"],
   "bs-dev-dependencies": [
-    "@dusty-phillips/rescript-zora",
-    "rescript-hooks-testing-library",
-    "@fattafatta/rescript-zora-jsdom"
+    "@greenlabs/rescript-jest",
+    "@greenlabs/rescript-testing-library"
   ]
 }
