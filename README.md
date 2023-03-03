@@ -146,7 +146,7 @@ atom1->Jotai.Atom.onMount(setAtom => {
 })
 ```
 
-### Standard hook
+### Core hooks
 
 #### Using read/write atoms (`Jotai.Atom.use`)
 
@@ -156,6 +156,25 @@ Standard hook to use with read/write atoms.
 ```rescript
 let atom1 = Jotai.Atom.make(1)
 let (value, setValue) = Jotai.Atom.use(atom1)
+```
+
+#### Get only the update function (`Jotai.Atom.useSetAtom`)
+
+A hook that returns only the update function of an atom. Can be used to access writeOnly atoms.
+
+```rescript
+let atom = Jotai.Atom.make(1)
+let setValue = Jotai.Atom.useSetAtom(atom)
+setValue(prev => prev + 1)
+```
+
+#### Get only the value (`Jotai.Atom.useAtomValue`)
+
+A hook that returns only the value of an atom. Can be used to access readOnly atoms.
+
+```rescript
+let atom = Jotai.Atom.make(1)
+let value = Jotai.Atom.useAtomValue(atom)
 ```
 
 ### Utils
@@ -252,25 +271,6 @@ Jotai.Utils.AtomFamily.setShouldRemoveUnregister(atomFamily, Js.Null.empty)
 ```
 
 ### Utils Hooks
-
-#### Get only the update function (`Jotai.Utils.useUpdateAtom`)
-
-A hook that returns only the update function of an atom. Can be used to access writeOnly atoms.
-
-```rescript
-let atom = Jotai.Atom.make(1)
-let setValue = Jotai.Utils.useUpdateAtom(atom)
-setValue(prev => prev + 1)
-```
-
-#### Get only the value (`Jotai.Utils.useAtomValue`)
-
-A hook that returns only the value of an atom. Can be used to access readOnly atoms.
-
-```rescript
-let atom = Jotai.Atom.make(1)
-let value = Jotai.Utils.useAtomValue(atom)
-```
 
 #### Reset an atom (`Jotai.Utils.useResetAtom`)
 

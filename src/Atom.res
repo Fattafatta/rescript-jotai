@@ -204,7 +204,7 @@ external onMount: (t<'value, _, [> Tags.w]>, setAtom<'value> => onUnmount) => un
 
 ```rescript
 let atom = Jotai.Atom.make(1)
-let setValue = Jotai.Utils.useUpdateAtom(atom) 
+let setValue = Jotai.Atom.useSetAtom(atom) 
 setValue(prev => prev + 1)
 ```
 ")
@@ -218,7 +218,7 @@ readOnly atoms.
 
 ```rescript
 let atom = Jotai.Atom.make(1)
-let value = Jotai.Utils.useAtomValue(atom) 
+let value = Jotai.Atom.useAtomValue(atom) 
 ```
 ")
 @module("jotai")
