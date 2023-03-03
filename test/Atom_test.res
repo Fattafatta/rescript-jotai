@@ -28,7 +28,7 @@ test("computed readonly atom", () => {
   let a = Atom.make(1)
   let c = Atom.makeComputed(({get}) => get(a) + 1)
   let {result: r1} = renderHook(() => Atom.use(a))
-  let {result: r2} = renderHook(() => Utils.useAtomValue(c))
+  let {result: r2} = renderHook(() => Atom.useAtomValue(c))
 
   expect(r2.current)->toBe(2)
   let (_, setValue) = r1.current
@@ -58,7 +58,7 @@ test("computed writable atom", () => {
 //   let a = Atom.make(1)
 //   let c = Atom.makeComputedAsync(({get}) => Js.Promise.resolve(get(a) + 1))
 //   act(() => {
-//     let {result} = renderHook(() => Utils.useAtomValue(c), ())
+//     let {result} = renderHook(() => Atom.useAtomValue(c), ())
 //     t->equal(result.current, 2, "should be 2")
 //   })
 //   done()
@@ -69,10 +69,29 @@ test("computed writeonly atom", () => {
   let b: Atom.t<int, _, _> = Atom.makeWriteOnlyComputed(({set, _}, id) => {
     a->set(id)
   })
-  let {result} = renderHook(() => Utils.useUpdateAtom(b))
+  let {result} = renderHook(() => Atom.useSetAtom(b))
   let setValue = result.current
   act(() => setValue(2))
   let {result} = renderHook(() => Atom.use(a))
   let (value, _) = result.current
   expect(value)->toBe(2)
+})
+
+test("useSetAtom hook", () => {
+  let a = Atom.make(1)
+  let {result} = renderHook(() => Atom.useSetAtom(a))
+  let setValue = result.current
+  act(() => setValue(p => p + 1))
+  let {result} = renderHook(() => Atom.use(a))
+  let (value, _) = result.current
+  expect(value)->toBe(2)
+})
+
+test("useAtomValue hook", () => {
+  let a = Atom.make(1)
+  let {result} = renderHook(() => Atom.use(a))
+  let (_, setValue) = result.current
+  act(() => setValue(p => p + 1))
+  let {result} = renderHook(() => Atom.useAtomValue(a))
+  expect(result.current)->toBe(2)
 })
