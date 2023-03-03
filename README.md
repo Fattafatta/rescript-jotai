@@ -65,11 +65,7 @@ let atom2 = Jotai.Atom.make('text')
 Create an atom from an async function.
 
 ```rescript
-let atom1 = Jotai.Atom.makeAsync(() =>
-  Js.Promise.make((~resolve, ~reject as _) => {
-    Js.Global.setTimeout(() => resolve(. 1), 100)->ignore
-  })
-)
+let atom1 = Jotai.Atom.makeAsync(async () => 1)
 ```
 
 #### Computed atom (`Jotai.Atom.makeComputed`)
@@ -89,12 +85,7 @@ let atom3 = Jotai.Atom.makeComputed(({get}) => get(atom1) + get(atom2) + 1)
 
 ```rescript
 let atom1 = Jotai.Atom.make(1)
-let atom2 = Jotai.Atom.makeComputedAsync(({get}) => {
-  Js.Promise.make((~resolve, ~reject as _) => {
-    let count = atom1->get + 1
-    Js.Global.setTimeout(() => resolve(. count), 100)->ignore
-  })
-})
+let atom2 = Jotai.Atom.makeComputedAsync(async ({get}) => {atom1->get + 1})
 ```
 
 #### Computed writable atom (`Jotai.Atom.makeWritableComputed`)
