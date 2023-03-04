@@ -233,7 +233,7 @@ it is recommended to set the type directly on the function param.
 
 ```rescript
 let atomFamily = Jotai.Utils.AtomFamily.make((name: string) => Jotai.Atom.make(name))
-let atom = atomFamily(\"text\")
+let atom = atomFamily("text")
 ```
 
 ##### With Equals function
@@ -252,7 +252,7 @@ let atomFamWithEqual = Jotai.Utils.AtomFamily.makeWithEqual(
 Removes an atom from an atomFamily.
 
 ```rescript
-Jotai.Utils.AtomFamily.remove(atomFamily, \"text\")
+Jotai.Utils.AtomFamily.remove(atomFamily, "text")
 ```
 
 ##### SetShouldRemove
@@ -260,7 +260,7 @@ Jotai.Utils.AtomFamily.remove(atomFamily, \"text\")
 Register a shouldRemove function.
 
 ```rescript
-let shouldRemove = (createdAt, param) => param == \"test\"
+let shouldRemove = (createdAt, param) => param == "test"
 Jotai.Utils.AtomFamily.setShouldRemove(atomFamily, shouldRemove)
 ```
 
