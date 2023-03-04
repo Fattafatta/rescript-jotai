@@ -1,5 +1,5 @@
-const { atom } = require("jotai");
-const { atomWithDefault } = require("jotai/utils");
+import { atom } from "jotai";
+import { atomWithDefault } from "jotai/utils";
 
 /**
  * The compiler stores a function type at time of definition and not application.
@@ -12,7 +12,7 @@ const { atomWithDefault } = require("jotai/utils");
  * @param {*} writeFunc
  * @returns
  */
-exports.atomWrapped = (getFunc, writeFunc) => {
+const atomWrapped = (getFunc, writeFunc) => {
   return atom(
     (get) => {
       return getFunc({ get });
@@ -22,18 +22,28 @@ exports.atomWrapped = (getFunc, writeFunc) => {
       // that is only used internally. But it messes up the Curry._1 function used by rescript. Keeping the
       // optional parameter would make the function signature unnecessarily complex.
       const getWithoutOptions = (a) => get(a, undefined);
-      writeFunc({ get: getWithoutOptions, set, dispatch: set }, args);
+      // TODO The original function parameters are defined as (a, ..args). Therefore fn.length = 1. This results in
+      // the Curr._2 function applied here to mess up. This function makes sure that the arity is always at least 2.
+      const setWithArity2 = (a1, a2, ...args) => {
+        set(a1, ...[a2, ...args]);
+      };
+      writeFunc(
+        { get: getWithoutOptions, set: setWithArity2, dispatch: set },
+        args
+      );
     }
   );
 };
 
-exports.onMount = (anAtom, setter) => {
+const onMount = (anAtom, setter) => {
   anAtom.onMount = setter;
 };
-exports.something = undefined;
+const something = undefined;
 
-exports.atomWithDefaultWrapped = (getFunc) => {
+const atomWithDefaultWrapped = (getFunc) => {
   return atomWithDefault((get) => {
     return getFunc({ get });
   });
 };
+
+export { atomWrapped, atomWithDefaultWrapped, onMount, something };
