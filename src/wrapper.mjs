@@ -1,5 +1,5 @@
-const { atom } = require("jotai");
-const { atomWithDefault } = require("jotai/utils");
+import { atom } from "jotai";
+import { atomWithDefault } from "jotai/utils";
 
 /**
  * The compiler stores a function type at time of definition and not application.
@@ -12,7 +12,7 @@ const { atomWithDefault } = require("jotai/utils");
  * @param {*} writeFunc
  * @returns
  */
-exports.atomWrapped = (getFunc, writeFunc) => {
+const atomWrapped = (getFunc, writeFunc) => {
   return atom(
     (get) => {
       return getFunc({ get });
@@ -27,13 +27,15 @@ exports.atomWrapped = (getFunc, writeFunc) => {
   );
 };
 
-exports.onMount = (anAtom, setter) => {
+const onMount = (anAtom, setter) => {
   anAtom.onMount = setter;
 };
-exports.something = undefined;
+const something = undefined;
 
-exports.atomWithDefaultWrapped = (getFunc) => {
+const atomWithDefaultWrapped = (getFunc) => {
   return atomWithDefault((get) => {
     return getFunc({ get });
   });
 };
+
+export { atomWrapped, atomWithDefaultWrapped, onMount, something };
