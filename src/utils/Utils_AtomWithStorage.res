@@ -12,3 +12,6 @@ external make: (
   'value,
 ) => Atom.t<'value, Atom.Actions.set<'value>, [Atom.Tags.r | Atom.Tags.w | Atom.Tags.p]> =
   "atomWithStorage"
+
+@module("jotai/utils")
+external reset: 'reset = "RESET"

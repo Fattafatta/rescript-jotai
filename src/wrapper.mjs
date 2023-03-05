@@ -34,6 +34,20 @@ const atomWrapped = (getFunc, writeFunc) => {
     }
   );
 };
+/**
+ * There is no way to check at compile time, if an atom was created with a function as argument.
+ * So a warning is logged instead.
+ * @param {*} val
+ * @returns an atom config
+ */
+const atomWarn = (val) => {
+  if (typeof val === "function") {
+    console.warn(
+      "Calling Atom.make with a function as argument is not allowed. Use Atom.makeComputed instead."
+    );
+  }
+  return atom(val);
+};
 
 const something = undefined;
 
@@ -43,4 +57,4 @@ const atomWithDefaultWrapped = (getFunc) => {
   });
 };
 
-export { atomWrapped, atomWithDefaultWrapped, onMount, something };
+export { atomWrapped, atomWithDefaultWrapped, atomWarn, something };

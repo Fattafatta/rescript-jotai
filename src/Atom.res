@@ -44,20 +44,19 @@ let atom: Jotai.Atom.t<int, _, _> = Jotai.Atom.make(1)
 ")
 type t<'value, 'action, 'tags>
   constraint 'tags = [< Tags.all] constraint 'action = Actions.t<'setValue>
-type void // used for readonly atoms without setter
 
 type set<'value, 'action, 'tags> = t<'value, 'action, 'tags> constraint 'tags = [> Tags.w]
 
 type get<'value, 'action, 'tags> = t<'value, 'action, 'tags> constraint 'tags = [> Tags.r]
 
 type getter = {get: 'value 'action 'tags. get<'value, Actions.t<'action>, 'tags> => 'value}
+
 type setter = {
   get: 'value 'action 'tags. get<'value, Actions.t<'action>, 'tags> => 'value,
   set: 'value 'setValue 'action 'tags. (set<'value, Actions.t<'action>, 'tags>, 'setValue) => unit,
 }
 
 type getValue<'value> = getter => 'value
-type getValueAsync<'value> = getter => promise<'value>
 type setValue<'args> = (setter, 'args) => unit
 type setValueAsync<'args> = (setter, 'args) => promise<unit>
 
@@ -79,11 +78,8 @@ let atom1 = Jotai.Atom.makeAsync(async () => 1)
 ```
 ")
 @module("jotai")
-external makeAsync: (unit => promise<'value>) => t<
-  'value,
-  Actions.set<'value>,
-  [Tags.r | Tags.w | Tags.p],
-> = "atom"
+external makeAsync: (unit => promise<'value>) => t<promise<'value>, Actions.none, [#readable]> =
+  "atom"
 
 @ocaml.doc("Create a computed readonly atom. A computed atom can combine any number of
 readable atoms to create a single derived value. The syntax varies slightly from Jotai. 
@@ -96,7 +92,7 @@ let atom3 = Jotai.Atom.makeComputed(({get}) => get(atom1) + get(atom2) + 1)
 ```
 ")
 @module("./wrapper")
-external makeComputed: getValue<'value> => t<'value, Actions.none, [Tags.r]> = "atomWrapped"
+external makeComputed: getValue<'value> => t<'value, Actions.none, [#readable]> = "atomWrapped"
 
 @ocaml.doc("(Requires React.Suspense) Create an computed readonly atom with an async getter.
 All components will be notified when the returned promise resolves.
@@ -107,8 +103,8 @@ let atom2 = Jotai.Atom.makeComputedAsync(async ({get}) => {atom1->get + 2})
 ```
 ")
 @module("./wrapper")
-external makeComputedAsync: getValueAsync<'value> => t<'value, Actions.none, [Tags.r]> =
-  "atomWrapped"
+@deprecated("[DEPRECATED] No longer needed. Use `Atom.makeComputed` instead.")
+external makeComputedAsync: getValue<'value> => t<'value, Actions.none, [#readable]> = "atomWrapped"
 
 @ocaml.doc("Create a computed atom that supports read and write.
 
@@ -155,8 +151,14 @@ external makeWritableComputedAsync: (
 
 @module("./wrapper")
 external _makeWOC: (
-  Js.Nullable.t<void>,
+  Js.Nullable.t<none>,
   setValue<'args>,
+) => t<'value, Actions.update<'args>, [Tags.w]> = "atomWrapped"
+
+@module("./wrapper")
+external _makeWOCAsync: (
+  Js.Nullable.t<none>,
+  setValueAsync<'args>,
 ) => t<'value, Actions.update<'args>, [Tags.w]> = "atomWrapped"
 
 @ocaml.doc("Create a writeOnly computed atom.
@@ -169,7 +171,11 @@ let atom2: Jotai.Atom.t<int, _, _> = Jotai.Atom.makeWriteOnlyComputed(({get, set
 )
 ```
 ")
+@deprecated("[DEPRECATED] Use `Atom.makeWriteOnly` instead.")
 let makeWriteOnlyComputed = getSet => _makeWOC(Js.Nullable.null, getSet)
+
+let makeWriteOnly = getSet => _makeWOC(Js.Nullable.null, getSet)
+let makeWriteOnlyAsync = getSet => _makeWOCAsync(Js.Nullable.null, getSet)
 
 // HOOKS
 @ocaml.doc("Standard hook to use with read/write atoms.
@@ -181,6 +187,16 @@ let (value, setValue) = Jotai.Atom.use(atom1)
 ```
 ")
 @module("jotai")
+external useAtom: t<'value, Actions.t<'action>, [> Tags.r | Tags.w]> => ('value, 'action) =
+  "useAtom"
+
+@module("jotai")
+external useAtomAsync: t<promise<'value>, Actions.t<'action>, [> Tags.r | Tags.w]> => (
+  'value,
+  'action,
+) = "useAtom"
+
+@deprecated("[DEPRECATED] Use `Atom.useAtom` instead.") @module("jotai")
 external use: t<'value, Actions.t<'action>, [> Tags.r | Tags.w]> => ('value, 'action) = "useAtom"
 
 type setAtom<'value> = ('value => 'value) => unit
@@ -209,8 +225,7 @@ setValue(prev => prev + 1)
 ```
 ")
 @module("jotai")
-external useSetAtom: t<'value, Actions.t<'action>, [> Tags.w]> => 'action =
-  "useSetAtom"
+external useSetAtom: t<'value, Actions.t<'action>, [> Tags.w]> => 'action = "useSetAtom"
 
 // useAtomValue
 @ocaml.doc("A hook that returns only the value of an atom. Can be used to access 
@@ -224,3 +239,5 @@ let value = Jotai.Atom.useAtomValue(atom)
 @module("jotai")
 external useAtomValue: t<'value, _, [> Tags.r]> => 'value = "useAtomValue"
 
+@module("jotai")
+external useAtomValueAsync: t<promise<'value>, _, [> Tags.r]> => 'value = "useAtomValue"
