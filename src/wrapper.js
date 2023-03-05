@@ -10,7 +10,7 @@ const { atomWithDefault } = require("jotai/utils");
  * (See: https://ocaml.org/manual/polymorphism.html#s%3Ahigher-rank-poly)
  * @param {*} getFunc
  * @param {*} writeFunc
- * @returns
+ * @returns an atom config
  */
 exports.atomWrapped = (getFunc, writeFunc) => {
   return atom(
@@ -22,14 +22,33 @@ exports.atomWrapped = (getFunc, writeFunc) => {
       // that is only used internally. But it messes up the Curry._1 function used by rescript. Keeping the
       // optional parameter would make the function signature unnecessarily complex.
       const getWithoutOptions = (a) => get(a, undefined);
-      writeFunc({ get: getWithoutOptions, set, dispatch: set }, args);
+      // TODO The original function parameters are defined as (a, ..args). Therefore fn.length = 1. This results in
+      // the Curr._2 function applied here to mess up. This function makes sure that the arity is always at least 2.
+      const setWithArity2 = (a1, a2, ...args) => {
+        set(a1, ...[a2, ...args]);
+      };
+      writeFunc(
+        { get: getWithoutOptions, set: setWithArity2, dispatch: set },
+        args
+      );
     }
   );
 };
-
-exports.onMount = (anAtom, setter) => {
-  anAtom.onMount = setter;
+/**
+ * There is no way to check at compile time, if an atom was created with a function as argument.
+ * So a warning is logged instead.
+ * @param {*} val
+ * @returns an atom config
+ */
+exports.atomWarn = (val) => {
+  if (typeof val === "function") {
+    console.warn(
+      "Calling Atom.make with a function as argument is not allowed. Use Atom.makeComputed instead."
+    );
+  }
+  return atom(val);
 };
+
 exports.something = undefined;
 
 exports.atomWithDefaultWrapped = (getFunc) => {

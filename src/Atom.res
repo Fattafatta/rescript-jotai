@@ -196,7 +196,7 @@ atom1->Jotai.Atom.onMount(setAtom => {
 })
 ```
 ")
-@module("./wrapper")
+@set
 external onMount: (t<'value, _, [> Tags.w]>, setAtom<'value> => onUnmount) => unit = "onMount"
 
 // useUpdateAtom

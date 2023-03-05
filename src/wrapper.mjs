@@ -35,9 +35,6 @@ const atomWrapped = (getFunc, writeFunc) => {
   );
 };
 
-const onMount = (anAtom, setter) => {
-  anAtom.onMount = setter;
-};
 const something = undefined;
 
 const atomWithDefaultWrapped = (getFunc) => {
