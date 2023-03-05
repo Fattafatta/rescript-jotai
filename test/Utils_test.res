@@ -25,7 +25,7 @@ test("AtomWithDefault", () => {
   let (value, _) = result.current
   expect(value)->toBe(1)
   let {result} = renderHook(() => Utils.useResetAtom(b))
-  act(() =>result.current())
+  act(() => result.current())
   let {result} = renderHook(() => Atom.use(b))
   let (value, _) = result.current
   expect(value)->toBe(2)
@@ -82,7 +82,7 @@ test("useReducerAtom hook", () => {
 
 test("useUpdateAtom hook", () => {
   let a = Atom.make(1)
-  let {result} = renderHook(() => Utils.useUpdateAtom(a))
+  let {result} = renderHook(() => Atom.useSetAtom(a))
   let setValue = result.current
   act(() => setValue(p => p + 1))
   let {result} = renderHook(() => Atom.use(a))
@@ -95,6 +95,6 @@ test("useAtomValue hook", () => {
   let {result} = renderHook(() => Atom.use(a))
   let (_, setValue) = result.current
   act(() => setValue(p => p + 1))
-  let {result} = renderHook(() => Utils.useAtomValue(a))
+  let {result} = renderHook(() => Atom.useAtomValue(a))
   expect(result.current)->toBe(2)
 })

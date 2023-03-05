@@ -14,8 +14,8 @@ external make: Atom.getValue<'value> => Atom.t<
 > = "atomWithDefaultWrapped"
 
 @module("../wrapper")
-external makeAsync: Atom.getValueAsync<'value> => Atom.t<
+external makeAsync: Atom.getValue<'value> => Atom.t<
   'value,
   Atom.Actions.set<'value>,
-  [Atom.Tags.r | Atom.Tags.w | Atom.Tags.p | Atom.Tags.re],
+  [Atom.Tags.r | Atom.Tags.w | Atom.Tags.re],
 > = "atomWithDefaultWrapped"
