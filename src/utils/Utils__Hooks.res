@@ -1,29 +1,9 @@
 // useUpdateAtom
-@deprecated("[DEPRECATED]: use `useSetAtom` from `jotai` instead.")
-@ocaml.doc("A hook that returns only the update function of an atom. Can be used to access writeOnly atoms.
-
-```rescript
-let atom = Jotai.Atom.make(1)
-let setValue = Jotai.Utils.useUpdateAtom(atom) 
-setValue(prev => prev + 1)
-```
-")
-@module("jotai/utils")
-external useUpdateAtom: Atom.t<'value, Atom.Actions.t<'action>, [> Atom.Tags.w]> => 'action =
-  "useUpdateAtom"
+exception FunctionMoved(string)
+let useUpdateAtom = raise(FunctionMoved("Moved to core. Use `Atom.useSetAtom` instead"))
 
 // useAtomValue
-@deprecated("[DEPRECATED]: use `useAtomValue` from `jotai` instead.")
-@ocaml.doc("A hook that returns only the value of an atom. Can be used to access 
-readOnly atoms.
-
-```rescript
-let atom = Jotai.Atom.make(1)
-let value = Jotai.Utils.useAtomValue(atom) 
-```
-")
-@module("jotai/utils")
-external useAtomValue: Atom.t<'value, _, [> Atom.Tags.r]> => 'value = "useAtomValue"
+let useAtomValue = raise(FunctionMoved("Moved to core. Use `Atom.useAtomValue` instead"))
 
 // useResetAtom
 @ocaml.doc("Returns a function that can be used to reset a resettable atom.
