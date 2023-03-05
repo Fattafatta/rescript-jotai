@@ -11,8 +11,8 @@ module Tags = {
   type all = [r | w | p | re]
 }
 
-@ocaml.doc("Readonly atoms have no setter but one is required in the type signature.
-Setting an explicit none type prevents compiler problems with type annotation.
+@ocaml.doc("Readonly atoms have no setter, while writeonly atoms have no getter but one is required 
+in the type signature. Setting an explicit none type prevents compiler problems with type annotation.
 ")
 type none
 
@@ -61,17 +61,21 @@ type setValue<'args> = (setter, 'args) => unit
 type setValueAsync<'args> = (setter, 'args) => promise<unit>
 
 // ATOMS
-@ocaml.doc("Create a (primitive) readable and writable atom.
+@ocaml.doc("Create a (primitive) readable and writable atom (config).
+CAUTION: Don't pass a function as argument to `Atom.make`. That would implicitely create a computed atom
+and the compiler will produce weird types. Use `Atom.makeComputed` for that. 
 
 ```rescript
 let atom1 = Jotai.Atom.make(1)
-let atom2 = Jotai.Atom.make('text')
+let atom2 = Jotai.Atom.make(\"text\")
+// DON'T do this:
+let atom3 = Jotai.Atom.make(() => 1)
 ```
 ")
 @module("jotai")
 external make: 'value => t<'value, Actions.set<'value>, [Tags.r | Tags.w | Tags.p]> = "atom"
 
-@ocaml.doc("Create an atom from an async function.
+@ocaml.doc("Create a readonly atom from an async function.
 
 ```rescript
 let atom1 = Jotai.Atom.makeAsync(async () => 1)
@@ -81,8 +85,8 @@ let atom1 = Jotai.Atom.makeAsync(async () => 1)
 external makeAsync: (unit => promise<'value>) => t<promise<'value>, Actions.none, [#readable]> =
   "atom"
 
-@ocaml.doc("Create a computed readonly atom. A computed atom can combine any number of
-readable atoms to create a single derived value. The syntax varies slightly from Jotai. 
+@ocaml.doc("Create a computed readonly sync atom. A computed atom can combine any number of
+readable sync atoms to create a single derived value. The syntax varies slightly from Jotai. 
 Note the curly braces in `({get})`.
 
 ```rescript
@@ -94,12 +98,12 @@ let atom3 = Jotai.Atom.makeComputed(({get}) => get(atom1) + get(atom2) + 1)
 @module("./wrapper")
 external makeComputed: getValue<'value> => t<'value, Actions.none, [#readable]> = "atomWrapped"
 
-@ocaml.doc("(Requires React.Suspense) Create an computed readonly atom with an async getter.
-All components will be notified when the returned promise resolves.
+@ocaml.doc("(Requires React.Suspense) Create a computed readonly atom with an async getter. It is
+possible to combine sync and async atoms. All components will be notified when the returned promise resolves.
 
 ```rescript
-let atom1 = Jotai.Atom.make(1)
-let atom2 = Jotai.Atom.makeComputedAsync(async ({get}) => {atom1->get + 2})
+let atom1 = Jotai.Atom.makeAsync(() => 1)
+let atom2 = Jotai.Atom.makeComputedAsync(async ({get}) => {await get(atom1) + 2})
 ```
 ")
 @module("./wrapper")
@@ -239,5 +243,12 @@ let value = Jotai.Atom.useAtomValue(atom)
 @module("jotai")
 external useAtomValue: t<'value, _, [> Tags.r]> => 'value = "useAtomValue"
 
+/** A hook that returns only the value of an atom. Can be used to access readOnly atoms. 
+
+```rescript
+let atom = Jotai.Atom.make(1)
+let value = Jotai.Atom.useAtomValue(atom) 
+```
+*/
 @module("jotai")
 external useAtomValueAsync: t<promise<'value>, _, [> Tags.r]> => 'value = "useAtomValue"
