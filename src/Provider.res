@@ -14,4 +14,4 @@ module App = {
 ```
 ")
 @module("jotai") @react.component
-external make: (~children: React.element) => React.element = "Provider"
+external make: (~children: React.element, ~store: Store.t=?) => React.element = "Provider"

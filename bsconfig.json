@@ -6,7 +6,7 @@
     {
       "dir": "src",
       "subdirs": true,
-      "public": ["Atom", "Provider", "Utils"]
+      "public": ["Atom", "Provider", "Utils", "Store"]
     },
     {
       "dir": "test",
