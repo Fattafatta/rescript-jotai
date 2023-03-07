@@ -1,7 +1,7 @@
 type reducer<'value, 'action> = ('value, 'action) => 'value
 type dispatch<'action> = 'action => unit
 
-@ocaml.doc("Creates an atom that uses a reducer to update its value.
+/** Creates an atom that uses a reducer to update its value.
 
 ```rescript
 type actionType = Inc(int) | Dec(int)
@@ -15,7 +15,7 @@ let atom = Utils.AtomWithReducer.make(0, countReducer)
 let (value, dispatch) = Atom.use(atom)
 Inc(1)->dispatch
 ```
-")
+*/
 @module("jotai/utils")
 external make: (
   'value,
