@@ -10,12 +10,5 @@ let atom2 = Jotai.Utils.AtomWithDefault.make(({get}) => atom1->get + 1)
 external make: Atom.getValue<'value> => Atom.t<
   'value,
   Atom.Actions.set<'value>,
-  [Atom.Tags.r | Atom.Tags.w | Atom.Tags.p | Atom.Tags.re],
-> = "atomWithDefaultWrapped"
-
-@module("../wrapper")
-external makeAsync: Atom.getValue<'value> => Atom.t<
-  'value,
-  Atom.Actions.set<'value>,
   [Atom.Tags.r | Atom.Tags.w | Atom.Tags.re],
 > = "atomWithDefaultWrapped"
