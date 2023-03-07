@@ -82,6 +82,9 @@ let atom1 = Jotai.Atom.makeAsync(async () => 1)
 ```
 ")
 @module("jotai")
+external makeThunk: (unit => 'value) => t<'value, Actions.none, [#readable]> = "atom"
+
+@module("jotai") @deprecated("[DEPRECATED] No longer needed. Use `Atom.makeThunk` instead.")
 external makeAsync: (unit => promise<'value>) => t<promise<'value>, Actions.none, [#readable]> =
   "atom"
 

@@ -27,7 +27,10 @@ type setValue<'args> = (setter, 'args) => unit
 type setValueAsync<'args> = (setter, 'args) => promise<unit>
 @module("jotai")
 external make: 'value => t<'value, Actions.set<'value>, [Tags.r | Tags.w | Tags.p]> = "atom"
-@module("jotai") @module("jotai")
+@module("jotai")
+external makeThunk: (unit => promise<'value>) => t<promise<'value>, Actions.none, [#readable]> =
+  "atom"
+@module("jotai")
 external makeAsync: (unit => promise<'value>) => t<promise<'value>, Actions.none, [#readable]> =
   "atom"
 let makeComputed: getValue<'value> => t<'value, Actions.none, Tags.r>
