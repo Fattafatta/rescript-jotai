@@ -1,9 +1,8 @@
 // useUpdateAtom
-exception FunctionMoved(string)
-let useUpdateAtom = raise(FunctionMoved("Moved to core. Use `Atom.useSetAtom` instead"))
+let useUpdateAtom = failwith("Moved to core. Use `Atom.useSetAtom` instead")
 
 // useAtomValue
-let useAtomValue = raise(FunctionMoved("Moved to core. Use `Atom.useAtomValue` instead"))
+let useAtomValue = failwith("Moved to core. Use `Atom.useAtomValue` instead")
 
 // useResetAtom
 @ocaml.doc("Returns a function that can be used to reset a resettable atom.
