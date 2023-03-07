@@ -1,4 +1,4 @@
-@ocaml.doc("Creates an atom that can be resetted to its initialValue with the `useResetAtom` hook.
+/** Creates an atom that can be reset to its initialValue with the `useResetAtom` hook.
 
 ```rescript
 let atom = Jotai.Utils.AtomWithReset.make(1)
@@ -6,7 +6,7 @@ let atom = Jotai.Utils.AtomWithReset.make(1)
 let reset = Jotai.Utils.useResetAtom(atom)
 reset()
 ```
-")
+*/
 @module("jotai/utils")
 external make: 'value => Atom.t<
   'value,

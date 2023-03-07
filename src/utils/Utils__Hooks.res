@@ -5,7 +5,7 @@ let useUpdateAtom = failwith("Moved to core. Use `Atom.useSetAtom` instead")
 let useAtomValue = failwith("Moved to core. Use `Atom.useAtomValue` instead")
 
 // useResetAtom
-@ocaml.doc("Returns a function that can be used to reset a resettable atom.
+/** Returns a function that can be used to reset a resettable atom.
 
 ```rescript
 let atom = Jotai.Utils.AtomWithReset(1)  // value: 1
@@ -14,13 +14,13 @@ setValue(2)  // value: 2
 let resetValue = Jotai.Utils.useResetAtom(atom) 
 resetValue()  // value back to: 1
 ```
-")
+*/
 type reset = unit => unit
 @module("jotai/utils")
 external useResetAtom: Atom.t<'value, _, [> Atom.Tags.re]> => reset = "useResetAtom"
 
 // useReducerAtom
-@ocaml.doc("Allows to use a reducer function with a primitive atom.
+/* Allows to use a reducer function with a primitive atom.
 
 ```rescript
 type actionType = Inc(int) | Dec(int)
@@ -34,7 +34,7 @@ let atom = Jotai.Atom.make(0)
 let (value, dispatch) = Jotai.Utils.useReducerAtom(atom, countReducer)
 Inc(1)->dispatch
 ```
-")
+*/
 @module("jotai/utils")
 external useReducerAtom: (
   Atom.t<'value, _, [> Atom.Tags.p]>,
