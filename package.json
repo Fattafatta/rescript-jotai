@@ -1,6 +1,6 @@
 {
   "name": "@fattafatta/rescript-jotai",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Rescript bindings for Jotai (react state management).",
   "keywords": [
     "rescript",
@@ -23,12 +23,15 @@
     "@greenlabs/rescript-testing-library": "^2.0.1",
     "jest-environment-jsdom": "^29.3.1",
     "jest-localstorage-mock": "^2.4.22",
-    "jotai": "^2.0.3",
-    "rescript": "^10.1.2"
+    "jotai": "^2.7.1",
+    "rescript": "^11.0.1",
+    "@rescript/core": "^1.1.0",
+    "@rescript/react": "^0.12.1",
+    "rescript-webapi": "^0.9.1"
   },
   "peerDependencies": {
-    "@rescript/react": "^0.11.0",
-    "jotai": "^2.0.3",
-    "react": "^18.0.0"
+    "@rescript/react": ">=0.12.0",
+    "jotai": ">=2.0.3",
+    "react": ">=18.0.0"
   }
 }
