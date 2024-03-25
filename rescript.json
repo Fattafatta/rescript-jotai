@@ -1,12 +1,21 @@
 {
   "name": "@fattafatta/rescript-jotai",
   "namespace": "jotai",
-  "reason": { "react-jsx": 3 },
+  "version": "0.3.1",
+  "jsx": {
+    "version": 4,
+    "module": "react"
+  },
   "sources": [
     {
       "dir": "src",
       "subdirs": true,
-      "public": ["Atom", "Provider", "Utils", "Store"]
+      "public": [
+        "Atom",
+        "Provider",
+        "Utils",
+        "Store"
+      ]
     },
     {
       "dir": "test",
@@ -17,11 +26,14 @@
   "package-specs": [
     {
       "module": "commonjs",
+      "suffix": ".bs.js",
       "in-source": true
     }
   ],
-  "suffix": ".bs.js",
-  "bs-dependencies": ["@rescript/react"],
+  "bs-dependencies": [
+    "@rescript/react",
+    "@rescript/core"
+  ],
   "bs-dev-dependencies": [
     "@greenlabs/rescript-jest",
     "@greenlabs/rescript-testing-library"
