@@ -6,6 +6,8 @@ Versions below 0.3.0 support Jotai v1.
 
 Versions 0.3.0 and higher support Jotai v2. They also require at least rescript 10.1 (for async/await) and react 18+.
 
+Versions 0.4.0 and higher support Jotai v2 with rescript 11 and react 18+.
+
 ## Installation
 
 Install with `npm`:
