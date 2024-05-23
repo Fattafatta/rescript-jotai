@@ -64,6 +64,22 @@ test("AtomWithReducer", () => {
   expect(value)->toBe(1)
 })
 
+test("SelectAtom", () => {
+  let a = Atom.make(1)
+  let b = Utils.SelectAtom.make(a, (a, _prev) => a + 1)
+  let {result: resultA} = renderHook(() => Atom.use(a))
+  let (_, setValue) = resultA.current
+  let {result} = renderHook(() => Atom.useAtomValue(b))
+  expect(result.current)->toBe(2)
+  act(() => setValue(_ => 2))
+
+  // The following lines should not compile because `b` is not writable
+  // let _ = renderHook(() => Atom.useAtom(b))
+  // let _ = renderHook(() => Atom.useSetAtom(b))
+
+  expect(result.current)->toBe(3)
+})
+
 test("useReducerAtom hook", () => {
   let countReducer = (prev, action) => {
     switch action {
