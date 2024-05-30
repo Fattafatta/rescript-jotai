@@ -254,6 +254,18 @@ atom1->Jotai.Atom.onMount(setAtom => {
 @set
 external onMount: (t<'value, _, [> Tags.w]>, setAtom<'value> => onUnmount) => unit = "onMount"
 
+/**
+`debugLabel` is a function that takes an atom and a string and adds a label to the atom for debugging purposes.
+See: https://jotai.org/docs/guides/debugging#debug-labels
+
+```rescript
+let atom1 = Jotai.Atom.make(1)
+atom1->Jotai.Atom.debugLabel("count")
+```
+ */
+@set
+external debugLabel: (t<'value, _, _>, string) => unit = "debugLabel"
+
 // useUpdateAtom
 /** A hook that returns only the update function of an atom. Can be used to access writeOnly atoms.
 
