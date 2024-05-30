@@ -95,3 +95,9 @@ test("useAtomValue hook", () => {
   let {result} = renderHook(() => Atom.useAtomValue(a))
   expect(result.current)->toBe(2)
 })
+
+test("debugLabel", () => {
+  let a = Atom.make(1)
+  Atom.debugLabel(a, "a")
+  expect(a)->toHavePropertyValue("debugLabel", "a")
+})

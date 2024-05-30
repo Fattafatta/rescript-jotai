@@ -46,6 +46,8 @@ let makeWritableComputedAsync: (
 let makeWriteOnlyComputed: setValue<'a> => t<'b, Actions.update<'a>, Tags.w>
 let makeWriteOnly: setValue<'a> => t<'b, Actions.update<'a>, Tags.w>
 let makeWriteOnlyAsync: setValueAsync<'a> => t<'b, Actions.update<'a>, Tags.w>
+@set
+external debugLabel: (t<'value, _, _>, string) => unit = "debugLabel"
 @module("jotai")
 external use: t<'value, Actions.t<'action>, [> Tags.r | Tags.w]> => ('value, 'action) = "useAtom"
 @module("jotai")
