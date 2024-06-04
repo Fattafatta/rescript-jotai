@@ -32,8 +32,8 @@ type sup<'value, 'action, 'tags> = (
 let value = Jotai.Store.get(store, atom); 
 ```
 */
-@get
-external get: t => get<'value, _, _> = "get"
+@send
+external get: (t, Atom.t<'value, _, [> Atom.Tags.r]>) => 'value = "get"
 
 /** Sets a new value of a given atom in the store.
 
@@ -41,10 +41,37 @@ external get: t => get<'value, _, _> = "get"
 Jotai.Store.set(store, atom, 1); 
 ```
 */
-@get
-external set: t => set<'value, _, _> = "set"
+@send
+external set: (t, Atom.t<'value, Jotai.Atom.Actions.set<'value>, [> Atom.Tags.w]>, 'value) => unit =
+  "set"
 
-/** Subscripe to changes of a given atom in the store. Returns a function to unsubscribe.
+/** Sets a new value of a writable computed atom in the store.
+
+```rescript
+Jotai.Store.update(store, atom, (value) => value + 1);
+```
+*/
+@send
+external update: (
+  t,
+  Atom.t<'value, Jotai.Atom.Actions.update<'value>, [> Atom.Tags.w]>,
+  'value,
+) => unit = "set"
+
+/** Sets a new value of a given reducer atom in the store.
+
+```rescript
+Jotai.Store.dispatch(store, atom, Inc(1)); 
+```
+*/
+@send
+external dispatch: (
+  t,
+  Atom.t<'value, Jotai.Atom.Actions.dispatch<'action>, [> Atom.Tags.w]>,
+  'action,
+) => unit = "set"
+
+/** Subscribe to changes of a given atom in the store. Returns a function to unsubscribe.
 
 ```rescript
 let unsub = Jotai.Store.sub(store, atom, () => {
@@ -54,8 +81,8 @@ let unsub = Jotai.Store.sub(store, atom, () => {
 // unsub() to unsubscribe
 ```
 */
-@get
-external sub: t => sup<_, _, _> = "sub"
+@send
+external sub: (t, Atom.t<_, _, [> Atom.Tags.r]>, @uncurry unit => unit) => unitToUnitFunc = "sub"
 
 /** This hook returns a store within the component tree.
 
