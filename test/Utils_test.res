@@ -98,3 +98,10 @@ test("useAtomValue hook", () => {
   let {result} = renderHook(() => Atom.useAtomValue(a))
   expect(result.current)->toBe(2)
 })
+
+test("freezeAtom", () => {
+  let a = Atom.make(1)
+  let b = Utils.FreezeAtom.freezeAtom(a)
+  let {result} = renderHook(() => Atom.useAtomValue(b)) // Atom.useAtom(b) should not compile
+  expect(result.current)->toBe(1)
+})
