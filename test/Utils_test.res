@@ -80,6 +80,17 @@ test("SelectAtom", () => {
   expect(result.current)->toBe(3)
 })
 
+test("SelectAtom - with equality", () => {
+  let a = Atom.make(1)
+  let b = Utils.SelectAtom.makeWithEquality(a, (a, _prev) => a + 1, (a, b) => a == b)
+  let {result: resultA} = renderHook(() => Atom.useAtom(a))
+  let (_, setValue) = resultA.current
+  let {result} = renderHook(() => Atom.useAtomValue(b))
+  expect(result.current)->toBe(2)
+  act(() => setValue(_ => 2))
+  expect(result.current)->toBe(3)
+})
+
 test("useReducerAtom hook", () => {
   let countReducer = (prev, action) => {
     switch action {

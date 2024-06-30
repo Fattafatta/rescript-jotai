@@ -378,6 +378,51 @@ let value = Jotai.Utils.Loadable.useLoadableValue(loadableAtom)
 }}
 ```
 
+#### FreezeAtom (`Jotai.Utils.FreezeAtom`)
+
+Creates an atom that is read-only and deeply frozen from an existing atom.
+
+```rescript
+let atom = Jotai.Atom.make(1)
+let freeze = Jotai.Utils.FreezeAtom.freezeAtom(atom)
+```
+
+#### SelectAtom (`Utils.SelectAtom.make`)
+
+Derives a readonly atom that selects a slice of the state of an atom.
+
+```rescript
+let a = Atom.make(1)
+let b = Utils.SelectAtom.make(a, (a, _prev) => a + 1)
+```
+
+Derives a readonly atom that selects a slice of the state of an atom with a custom equality function.
+
+```rescript
+let a = Atom.make(1)
+let b = Utils.SelectAtom.makeWithEquality(a, (a, _prev) => a + 1, (a, b) => a == b)
+```
+
+#### AtomWithRefresh (`Jotai.Utils.AtomWithRefresh.make`)
+
+Creates an atom that we can refresh, which is to force reevaluating the read function..
+
+```rescript
+let atom1 = Jotai.Utils.AtomWithRefresh.make(_ => 1)
+let (value, refresh) = Jotai.Utils.useRefreshAtom(atom1)
+refresh()
+```
+
+Creates a **writeable** atom that we can refresh, which is to force reevaluating the read function..
+
+```rescript
+let atom1 = Jotai.Utils.AtomWithRefresh.makeComputed(
+({get}) => 1,
+({get, set}, arg) => {/* set something */},
+)
+let (value, update) = Jotai.Utils.useAtom(atom1)
+```
+
 ### Utils Hooks
 
 #### Reset an atom (`Jotai.Utils.useResetAtom`)
@@ -392,7 +437,17 @@ let resetValue = Jotai.Utils.useResetAtom(atom)
 resetValue()  // value back to: 1
 ```
 
-#### Pass a reducer to a writable atom (`Jotai.Utils.useReducerAtom`)
+## Refresh an atom (`Jotai.Utils.useRefreshAtom`)
+
+Hook to refresh an `AtomWithRefresh`. (This is the equivalent of calling the set function without arguments in Jotai)
+
+```rescript
+let atom1 = Jotai.Utils.AtomWithRefresh.make(_ => 1)
+let (value, refresh) = Jotai.Utils.useRefreshAtom(atom1)
+refresh()
+```
+
+#### (deprecated) Pass a reducer to a writable atom (`Jotai.Utils.useReducerAtom`)
 
 Allows to use a reducer function with a primitive atom.
 
