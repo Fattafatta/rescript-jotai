@@ -36,6 +36,7 @@ Inc(1)->dispatch
 ```
 */
 @module("jotai/utils")
+@deprecated("[DEPRECATED] useReducerAtom is deprecated and will be removed in the future.")
 external useReducerAtom: (
   Atom.t<'value, _, [> Atom.Tags.p]>,
   Utils_AtomWithReducer.reducer<'value, 'action>,
