@@ -3,7 +3,8 @@ module Tags: {
   type w = [#writable]
   type p = [#primitive]
   type re = [#resettable]
-  type all = [#primitive | #readable | #resettable | #writable]
+  type fr = [#refreshable]
+  type all = [#primitive | #readable | #resettable | #writable | #refreshable]
 }
 type none
 module Actions: {
