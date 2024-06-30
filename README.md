@@ -314,7 +314,7 @@ let countReducer = (prev, action) => {
   }
 }
 let atom = Utils.AtomWithReducer.make(0, countReducer)
-let (value, dispatch) = Atom.use(atom)
+let (value, dispatch) = Atom.useAtom(atom)
 Inc(1)->dispatch
 ```
 
@@ -386,7 +386,7 @@ Returns a function that can be used to reset a resettable atom.
 
 ```rescript
 let atom = Jotai.Utils.AtomWithReset(1)  // value: 1
-let (_, setValue) = Jotai.Atom.use(atom)
+let (_, setValue) = Jotai.Atom.useAtom(atom)
 setValue(2)  // value: 2
 let resetValue = Jotai.Utils.useResetAtom(atom)
 resetValue()  // value back to: 1

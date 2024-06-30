@@ -4,7 +4,7 @@ open TestingLibrary.React
 
 test("standard atom", () => {
   let a = Atom.make(1)
-  let {result} = renderHook(() => Atom.use(a))
+  let {result} = renderHook(() => Atom.useAtom(a))
   let (value, setValue) = result.current
 
   expect(value)->toBe(1)
@@ -17,7 +17,7 @@ test("standard atom", () => {
 // test("async read atom", () => {
 //   act(() =>{
 //     let a = Atom.makeAsync(async () => {1})
-//     let {result} = renderHook(() => Atom.use(a))
+//     let {result} = renderHook(() => Atom.useAtom(a))
 //     let (value, _) = result.current
 
 //     expect(value)->toBe(1)
@@ -27,7 +27,7 @@ test("standard atom", () => {
 test("computed readonly atom", () => {
   let a = Atom.make(1)
   let c = Atom.makeComputed(({get}) => get(a) + 1)
-  let {result: r1} = renderHook(() => Atom.use(a))
+  let {result: r1} = renderHook(() => Atom.useAtom(a))
   let {result: r2} = renderHook(() => Atom.useAtomValue(c))
 
   expect(r2.current)->toBe(2)
@@ -45,7 +45,7 @@ test("computed writable atom", () => {
       a->set(a->get + arg)
     },
   )
-  let {result} = renderHook(() => Atom.use(rw))
+  let {result} = renderHook(() => Atom.useAtom(rw))
   let (value, addValue) = result.current
   expect(value)->toBe(2)
 
@@ -72,7 +72,7 @@ test("computed writeonly atom", () => {
   let {result} = renderHook(() => Atom.useSetAtom(b))
   let setValue = result.current
   act(() => setValue(2))
-  let {result} = renderHook(() => Atom.use(a))
+  let {result} = renderHook(() => Atom.useAtom(a))
   let (value, _) = result.current
   expect(value)->toBe(2)
 })
@@ -82,14 +82,14 @@ test("useSetAtom hook", () => {
   let {result} = renderHook(() => Atom.useSetAtom(a))
   let setValue = result.current
   act(() => setValue(p => p + 1))
-  let {result} = renderHook(() => Atom.use(a))
+  let {result} = renderHook(() => Atom.useAtom(a))
   let (value, _) = result.current
   expect(value)->toBe(2)
 })
 
 test("useAtomValue hook", () => {
   let a = Atom.make(1)
-  let {result} = renderHook(() => Atom.use(a))
+  let {result} = renderHook(() => Atom.useAtom(a))
   let (_, setValue) = result.current
   act(() => setValue(p => p + 1))
   let {result} = renderHook(() => Atom.useAtomValue(a))

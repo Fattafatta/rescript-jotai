@@ -21,10 +21,10 @@ type none
 a `dispatch` function that has an 'action parameter.
 
 ```rescript
-let (value, dispatch) = Atom.use(atomWithReducer)
+let (value, dispatch) = Atom.useAtom(atomWithReducer)
 dispatch(Increment(1))
 
-let (value, setValue) = Atom.use(primitiveAtom)
+let (value, setValue) = Atom.useAtom(primitiveAtom)
 setValue(prev => prev + 1)
 ```
 */
