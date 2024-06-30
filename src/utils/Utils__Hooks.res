@@ -9,7 +9,7 @@ let useAtomValue = failwith("Moved to core. Use `Atom.useAtomValue` instead")
 
 ```rescript
 let atom = Jotai.Utils.AtomWithReset(1)  // value: 1
-let (_, setValue) = Jotai.Atom.use(atom)
+let (_, setValue) = Jotai.Atom.useAtom(atom)
 setValue(2)  // value: 2
 let resetValue = Jotai.Utils.useResetAtom(atom) 
 resetValue()  // value back to: 1

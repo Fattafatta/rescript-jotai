@@ -6,7 +6,7 @@ open TestingLibrary.React
 
 test("AtomWithStorage", () => {
   let a = Utils.AtomWithStorage.make("mykey", 1)
-  let {result} = renderHook(() => Atom.use(a))
+  let {result} = renderHook(() => Atom.useAtom(a))
   let (value, setValue) = result.current
   expect(value)->toBe(1)
   act(() => setValue(p => p + 1))
@@ -18,7 +18,7 @@ test("AtomWithStorage", () => {
 test("AtomWithDefault", () => {
   let a = Atom.make(1)
   let b = Utils.AtomWithDefault.make(({get}) => a->get + 1)
-  let {result} = renderHook(() => Atom.use(b))
+  let {result} = renderHook(() => Atom.useAtom(b))
   let (value, setValue) = result.current
   expect(value)->toBe(2)
   act(() => setValue(_ => 1))
@@ -26,14 +26,14 @@ test("AtomWithDefault", () => {
   expect(value)->toBe(1)
   let {result} = renderHook(() => Utils.useResetAtom(b))
   act(() => result.current())
-  let {result} = renderHook(() => Atom.use(b))
+  let {result} = renderHook(() => Atom.useAtom(b))
   let (value, _) = result.current
   expect(value)->toBe(2)
 })
 
 test("AtomWithReset", () => {
   let a = Utils.AtomWithReset.make(1)
-  let {result} = renderHook(() => Atom.use(a))
+  let {result} = renderHook(() => Atom.useAtom(a))
   let (value, setValue) = result.current
   expect(value)->toBe(1)
   act(() => setValue(p => p + 1))
@@ -41,7 +41,7 @@ test("AtomWithReset", () => {
   expect(value)->toBe(2)
   let {result} = renderHook(() => Utils.useResetAtom(a))
   act(() => result.current())
-  let {result} = renderHook(() => Atom.use(a))
+  let {result} = renderHook(() => Atom.useAtom(a))
   let (value, _) = result.current
   expect(value)->toBe(1)
 })
@@ -56,7 +56,7 @@ test("AtomWithReducer", () => {
     }
   }
   let a = Utils.AtomWithReducer.make(0, countReducer)
-  let {result} = renderHook(() => Atom.use(a))
+  let {result} = renderHook(() => Atom.useAtom(a))
   let (value, dispatch) = result.current
   expect(value)->toBe(0)
   act(() => Inc(1)->dispatch)
@@ -67,7 +67,7 @@ test("AtomWithReducer", () => {
 test("SelectAtom", () => {
   let a = Atom.make(1)
   let b = Utils.SelectAtom.make(a, (a, _prev) => a + 1)
-  let {result: resultA} = renderHook(() => Atom.use(a))
+  let {result: resultA} = renderHook(() => Atom.useAtom(a))
   let (_, setValue) = resultA.current
   let {result} = renderHook(() => Atom.useAtomValue(b))
   expect(result.current)->toBe(2)
@@ -101,14 +101,14 @@ test("useUpdateAtom hook", () => {
   let {result} = renderHook(() => Atom.useSetAtom(a))
   let setValue = result.current
   act(() => setValue(p => p + 1))
-  let {result} = renderHook(() => Atom.use(a))
+  let {result} = renderHook(() => Atom.useAtom(a))
   let (value, _) = result.current
   expect(value)->toBe(2)
 })
 
 test("useAtomValue hook", () => {
   let a = Atom.make(1)
-  let {result} = renderHook(() => Atom.use(a))
+  let {result} = renderHook(() => Atom.useAtom(a))
   let (_, setValue) = result.current
   act(() => setValue(p => p + 1))
   let {result} = renderHook(() => Atom.useAtomValue(a))

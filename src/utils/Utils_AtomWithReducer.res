@@ -12,7 +12,7 @@ let countReducer = (prev, action) => {
   }
 }
 let atom = Utils.AtomWithReducer.make(0, countReducer)
-let (value, dispatch) = Atom.use(atom)
+let (value, dispatch) = Atom.useAtom(atom)
 Inc(1)->dispatch
 ```
 */
