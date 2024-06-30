@@ -122,3 +122,44 @@ test("freezeAtom", () => {
   let {result} = renderHook(() => Atom.useAtomValue(b)) // Atom.useAtom(b) should not compile
   expect(result.current.a)->toBe(1)
 })
+
+test("AtomWithRefresh", () => {
+  let r = ref(0)
+  let a = Utils.AtomWithRefresh.make(_ => {
+    r := r.contents + 1
+    r
+  })
+  let {result} = renderHook(() => Utils.useRefreshAtom(a))
+  let (value, refresh) = result.current
+  expect(value.contents)->toBe(1)
+  act(() => refresh())
+  let (value, _) = result.current
+  expect(value.contents)->toBe(2)
+})
+
+test("AtomWithRefresh - write", () => {
+  let r = ref(0)
+  let rw = Utils.AtomWithRefresh.makeComputed(
+    _ => {
+      r := r.contents + 1
+      r
+    },
+    (_, arg) => {
+      r := arg
+    },
+  )
+  let {result} = renderHook(() => Atom.useAtom(rw))
+  let {result: rf} = renderHook(() => Utils.useRefreshAtom(rw))
+
+  let (value, refresh) = rf.current
+  expect(value.contents)->toBe(1)
+
+  act(() => refresh())
+  let (value, _) = rf.current
+  expect(value.contents)->toBe(2)
+
+  let (_, update) = result.current
+  act(() => update(9))
+  let (value, _) = result.current
+  expect(value.contents)->toBe(9)
+})

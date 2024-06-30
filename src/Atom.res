@@ -8,7 +8,8 @@ module Tags = {
   type w = [#writable]
   type p = [#primitive]
   type re = [#resettable]
-  type all = [r | w | p | re]
+  type fr = [#refreshable]
+  type all = [r | w | p | re | fr]
 }
 
 /** Readonly atoms have no setter, while writeonly atoms have no getter but one is required in 

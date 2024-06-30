@@ -14,6 +14,8 @@ module Loadable = Utils__Loadable
 
 module FreezeAtom = Utils__FreezeAtom
 
+module AtomWithRefresh = Utils__AtomWithRefresh
+
 include Utils__Hooks
 
 // TODO: Add missing utils
