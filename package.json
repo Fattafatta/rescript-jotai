@@ -1,6 +1,6 @@
 {
   "name": "@fattafatta/rescript-jotai",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Rescript bindings for Jotai (react state management).",
   "keywords": [
     "rescript",
