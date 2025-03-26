@@ -90,5 +90,5 @@ external sub: (t, Atom.t<_, _, [> Atom.Tags.r]>, @uncurry unit => unit) => unitT
 let store = Jotai.Store.useStore()
 ```
 */
-@module("Jotai")
+@module("jotai")
 external useStore: unit => t = "useStore"
