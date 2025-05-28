@@ -24,6 +24,7 @@
     "jest-environment-jsdom": "^29.3.1",
     "jest-localstorage-mock": "^2.4.22",
     "jotai": "^2.7.1",
+    "jotai-cache": "^0.5.0",
     "rescript": "^11.0.1",
     "@rescript/core": "^1.1.0",
     "@rescript/react": "^0.12.1",
