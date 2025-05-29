@@ -63,6 +63,16 @@ type getValue<'value> = getter => 'value
 type setValue<'args> = (setter, 'args) => unit
 type setValueAsync<'args> = (setter, 'args) => promise<unit>
 
+type store
+
+type useStoreOptions = {store?: store}
+type useSetAtomOpt = {...useStoreOptions}
+type useAtomValueOpt = {
+  ...useStoreOptions,
+  delay?: int,
+}
+type useAtomOpt = useAtomValueOpt
+
 // ATOMS
 /** Create a (primitive) readable and writable atom (config).
 CAUTION: Don't pass a function as argument to `Atom.make`. That would implicitly create a computed atom
@@ -218,8 +228,10 @@ let (value, setValue) = Jotai.Atom.useAtom(atom1)
 ```
 */
 @module("jotai")
-external useAtom: t<'value, Actions.t<'action>, [> Tags.r | Tags.w]> => ('value, 'action) =
-  "useAtom"
+external useAtom: (
+  t<'value, Actions.t<'action>, [> Tags.r | Tags.w]>,
+  ~options: useAtomOpt=?,
+) => ('value, 'action) = "useAtom"
 
 /** Standard hook to use with read/write async atoms (i.e. all atoms that contain a promise). 
 (For handling of readOnly/writeOnly atoms see `Jotai.useAtomValueAsync` or `Jotai.useSetAtom`)
@@ -230,10 +242,10 @@ let (value, setValue) = Jotai.Atom.useAtomAsync(atom1)
 ```
 */
 @module("jotai")
-external useAtomAsync: t<promise<'value>, Actions.t<'action>, [> Tags.r | Tags.w]> => (
-  'value,
-  'action,
-) = "useAtom"
+external useAtomAsync: (
+  t<promise<'value>, Actions.t<'action>, [> Tags.r | Tags.w]>,
+  ~options: useAtomOpt=?,
+) => ('value, 'action) = "useAtom"
 
 @deprecated("[DEPRECATED] Use `Atom.useAtom` instead.") @module("jotai")
 external use: t<'value, Actions.t<'action>, [> Tags.r | Tags.w]> => ('value, 'action) = "useAtom"
@@ -277,7 +289,10 @@ setValue(prev => prev + 1)
 ```
 */
 @module("jotai")
-external useSetAtom: t<'value, Actions.t<'action>, [> Tags.w]> => 'action = "useSetAtom"
+external useSetAtom: (
+  t<'value, Actions.t<'action>, [> Tags.w]>,
+  ~options: useSetAtomOpt=?,
+) => 'action = "useSetAtom"
 
 // useAtomValue
 /** A hook that returns only the value of a synchronous atom. Can be used to access readOnly atoms.
@@ -288,7 +303,8 @@ let value = Jotai.Atom.useAtomValue(atom)
 ```
 */
 @module("jotai")
-external useAtomValue: t<'value, _, [> Tags.r]> => 'value = "useAtomValue"
+external useAtomValue: (t<'value, _, [> Tags.r]>, ~options: useAtomValueOpt=?) => 'value =
+  "useAtomValue"
 
 /** A hook that returns only the value of an async atom (i.e. the atom contains a promise).
 Can be used to access readOnly async atoms. 
@@ -299,4 +315,7 @@ let value = Jotai.Atom.useAtomValue(atom)
 ```
 */
 @module("jotai")
-external useAtomValueAsync: t<promise<'value>, _, [> Tags.r]> => 'value = "useAtomValue"
+external useAtomValueAsync: (
+  t<promise<'value>, _, [> Tags.r]>,
+  ~options: useAtomValueOpt=?,
+) => 'value = "useAtomValue"

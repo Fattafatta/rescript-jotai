@@ -26,6 +26,14 @@ type setter = {
 type getValue<'value> = getter => 'value
 type setValue<'args> = (setter, 'args) => unit
 type setValueAsync<'args> = (setter, 'args) => promise<unit>
+type store
+type useStoreOptions = {store?: store}
+type useSetAtomOpt = {...useStoreOptions}
+type useAtomValueOpt = {
+  ...useStoreOptions,
+  delay?: int,
+}
+type useAtomOpt = useAtomValueOpt
 @module("jotai")
 external make: 'value => t<'value, Actions.set<'value>, [Tags.r | Tags.w | Tags.p]> = "atom"
 @module("jotai")
@@ -52,19 +60,28 @@ external debugLabel: (t<'value, _, _>, string) => unit = "debugLabel"
 @module("jotai")
 external use: t<'value, Actions.t<'action>, [> Tags.r | Tags.w]> => ('value, 'action) = "useAtom"
 @module("jotai")
-external useAtom: t<'value, Actions.t<'action>, [> Tags.r | Tags.w]> => ('value, 'action) =
-  "useAtom"
+external useAtom: (
+  t<'value, Actions.t<'action>, [> Tags.r | Tags.w]>,
+  ~options: useAtomOpt=?,
+) => ('value, 'action) = "useAtom"
 @module("jotai")
-external useAtomAsync: t<promise<'value>, Actions.t<'action>, [> Tags.r | Tags.w]> => (
-  'value,
-  'action,
-) = "useAtom"
+external useAtomAsync: (
+  t<promise<'value>, Actions.t<'action>, [> Tags.r | Tags.w]>,
+  ~options: useAtomOpt=?,
+) => ('value, 'action) = "useAtom"
 type setAtom<'value> = ('value => 'value) => unit
 type onUnmount = unit => unit
 let onMount: (t<'value, _, [> Tags.w]>, setAtom<'value> => onUnmount) => unit
 @module("jotai")
-external useSetAtom: t<'value, Actions.t<'action>, [> Tags.w]> => 'action = "useSetAtom"
+external useSetAtom: (
+  t<'value, Actions.t<'action>, [> Tags.w]>,
+  ~options: useSetAtomOpt=?,
+) => 'action = "useSetAtom"
 @module("jotai")
-external useAtomValue: t<'value, _, [> Tags.r]> => 'value = "useAtomValue"
+external useAtomValue: (t<'value, _, [> Tags.r]>, ~options: useAtomValueOpt=?) => 'value =
+  "useAtomValue"
 @module("jotai") @module("jotai")
-external useAtomValueAsync: t<promise<'value>, _, [> Tags.r]> => 'value = "useAtomValue"
+external useAtomValueAsync: (
+  t<promise<'value>, _, [> Tags.r]>,
+  ~options: useAtomValueOpt=?,
+) => 'value = "useAtomValue"

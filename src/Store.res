@@ -1,4 +1,4 @@
-type t
+type t = Atom.store
 
 /** Creates a store.
 
@@ -91,4 +91,4 @@ let store = Jotai.Store.useStore()
 ```
 */
 @module("jotai")
-external useStore: unit => t = "useStore"
+external useStore: (~options: Atom.useStoreOptions=?) => t = "useStore"
