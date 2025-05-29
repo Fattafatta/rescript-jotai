@@ -220,6 +220,19 @@ atom1->Jotai.Atom.onMount(setAtom => {
 })
 ```
 
+#### Cache (`Jotai.AtomWithCache.make`)
+
+Create a read-only atom with cache from a function. The function can be async.
+
+Options:
+size (optional): maximum size of cache items.
+shouldRemove (optional): a function to check if cache items should be removed.
+areEqual (optional): a function to compare atom values.
+
+```rescript
+let atom1 = Jotai.AtomWithCache.make(async ({get}) => 1, ~option={size: 5, areEqual=(v1, v2) => v1 == v2})
+```
+
 ### Core hooks
 
 #### Using read/write atoms (`Jotai.Atom.useAtom`)
