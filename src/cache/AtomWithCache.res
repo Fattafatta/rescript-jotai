@@ -25,11 +25,11 @@ shouldRemove (optional): a function to check if cache items should be removed.
 areEqual (optional): a function to compare atom values.
 
 ```rescript
-let atom1 = Jotai.AtomWithCache.make(async ({get}) => 1, ~option={size: 5, areEqual=(v1, v2) => v1 == v2})
+let atom1 = Jotai.AtomWithCache.make(async ({get}) => 1, ~options={size: 5, areEqual=(v1, v2) => v1 == v2})
 ```
 */
 @module("./wrapper")
 external make: (
   Atom.getValue<'value>,
-  ~option: atomWithCacheOpt<'value>=?,
+  ~options: atomWithCacheOpt<'value>=?,
 ) => Atom.t<'value, Atom.Actions.none, [Atom.Tags.r]> = "atomWithCacheWrapped"
