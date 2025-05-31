@@ -67,10 +67,7 @@ type store
 
 type useStoreOptions = {store?: store}
 type useSetAtomOpt = {...useStoreOptions}
-type useAtomValueOpt = {
-  ...useStoreOptions,
-  delay?: int,
-}
+type useAtomValueOpt = {...useStoreOptions}
 type useAtomOpt = useAtomValueOpt
 
 // ATOMS
