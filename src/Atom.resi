@@ -29,10 +29,7 @@ type setValueAsync<'args> = (setter, 'args) => promise<unit>
 type store
 type useStoreOptions = {store?: store}
 type useSetAtomOpt = {...useStoreOptions}
-type useAtomValueOpt = {
-  ...useStoreOptions,
-  delay?: int,
-}
+type useAtomValueOpt = {...useStoreOptions}
 type useAtomOpt = useAtomValueOpt
 @module("jotai")
 external make: 'value => t<'value, Actions.set<'value>, [Tags.r | Tags.w | Tags.p]> = "atom"
